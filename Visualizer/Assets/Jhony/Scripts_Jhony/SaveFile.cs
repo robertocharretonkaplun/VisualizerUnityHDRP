@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using System.IO; 
-using System.Text; 
-using System.Runtime.InteropServices; 
-using UnityEngine.UI; 
-using SFB; 
+using System.IO;
+using System.Text;
+using System.Runtime.InteropServices;
+using UnityEngine.UI;
+using SFB;
 using TMPro;
 using System;
 

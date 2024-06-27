@@ -29,73 +29,105 @@ public class ModelData
     public string materialPath; // Ruta del archivo del material
 }
 
+// Clase serializable que representa la lista de modelos
+[System.Serializable]
+public class ModelList
+{
+    public List<ModelData> models = new List<ModelData>();
+}
+
 public class SaveSystem : MonoBehaviour
 {
     public Material defaultMaterial;
-    private GameObject model; // Referencia al modelo cargado
-    private string modelPath;
-    private string materialPath;
+    private List<GameObject> models = new List<GameObject>(); // Referencia a los modelos cargados
+    private List<string> modelPaths = new List<string>();
+    private List<string> materialPaths = new List<string>();
+    private GameObject currentModel;
 
-    // Método para establecer el modelo y su ruta
+    // Método para establecer el modelo y su ruta (compatibilidad)
     public void SetModel(GameObject model, string modelPath)
     {
-        this.model = model;
-        this.modelPath = modelPath;
+        this.currentModel = model;
+        AddModel(model, modelPath);
     }
 
-    // Método para establecer la ruta del material
-    public void SetMaterialPath(string materialPath)
+    // Método para agregar un modelo y su ruta
+    public void AddModel(GameObject model, string modelPath)
     {
-        this.materialPath = materialPath;
+        models.Add(model);
+        modelPaths.Add(modelPath);
+        materialPaths.Add(null); // Inicialmente sin ruta de material
     }
 
-    // Método para guardar los datos del modelo
+    // Método para establecer la ruta del material para un modelo
+    public void SetMaterialPath(GameObject model, string materialPath)
+    {
+        int index = models.IndexOf(model);
+        if (index >= 0)
+        {
+            materialPaths[index] = materialPath;
+        }
+    }
+
+    // Método para guardar los datos de los modelos y la escena
     public void Save()
     {
-        if (model == null)
+        if (models.Count == 0)
         {
-            Debug.LogError("No model set to save."); // Error si no hay modelo
+            Debug.LogError("No models set to save."); // Error si no hay modelos
             return;
         }
 
-        // Obtener las transformaciones de todos los hijos del modelo
-        Transform[] childTransforms = model.GetComponentsInChildren<Transform>();
-        TransformData[] transformDataArray = new TransformData[childTransforms.Length];
-        for (int i = 0; i < childTransforms.Length; i++)
+        // Crear una lista de ModelData
+        ModelList modelList = new ModelList();
+
+        for (int j = 0; j < models.Count; j++)
         {
-            Transform t = childTransforms[i];
-            BoxCollider boxCollider = t.GetComponent<BoxCollider>();
-            transformDataArray[i] = new TransformData
+            GameObject model = models[j];
+            string modelPath = modelPaths[j];
+            string materialPath = materialPaths[j];
+
+            // Obtener las transformaciones de todos los hijos del modelo
+            Transform[] childTransforms = model.GetComponentsInChildren<Transform>();
+            TransformData[] transformDataArray = new TransformData[childTransforms.Length];
+            for (int i = 0; i < childTransforms.Length; i++)
             {
-                position = t.position,
-                rotation = t.rotation,
-                scale = t.localScale,
-                tag = t.tag,
-                hasBoxCollider = boxCollider != null,
-                boxColliderCenter = boxCollider != null ? boxCollider.center : Vector3.zero,
-                boxColliderSize = boxCollider != null ? boxCollider.size : Vector3.zero
+                Transform t = childTransforms[i];
+                BoxCollider boxCollider = t.GetComponent<BoxCollider>();
+                transformDataArray[i] = new TransformData
+                {
+                    position = t.position,
+                    rotation = t.rotation,
+                    scale = t.localScale,
+                    tag = t.tag,
+                    hasBoxCollider = boxCollider != null,
+                    boxColliderCenter = boxCollider != null ? boxCollider.center : Vector3.zero,
+                    boxColliderSize = boxCollider != null ? boxCollider.size : Vector3.zero
+                };
+            }
+
+            // Crear el objeto ModelData con las transformaciones
+            ModelData data = new ModelData
+            {
+                modelPath = modelPath,
+                transforms = transformDataArray,
+                materialPath = materialPath
             };
+
+            modelList.models.Add(data);
         }
 
-        // Crear el objeto ModelData con las transformaciones
-        ModelData data = new ModelData
-        {
-            modelPath = modelPath,
-            transforms = transformDataArray,
-            materialPath = materialPath
-        };
-
         // Guardar los datos en un archivo JSON
-        string path = StandaloneFileBrowser.SaveFilePanel("Save File", "", "modelData", "json");
+        string path = StandaloneFileBrowser.SaveFilePanel("Save File", "", "sceneData", "json");
         if (!string.IsNullOrEmpty(path))
         {
-            string json = JsonUtility.ToJson(data, true); // Convierte los datos en JSON
+            string json = JsonUtility.ToJson(modelList, true); // Convierte los datos en JSON
             File.WriteAllText(path, json); // Escribe el JSON en un archivo
-            Debug.Log("Model saved to: " + path); // Log de confirmación
+            Debug.Log("Scene saved to: " + path); // Log de confirmación
         }
     }
 
-    // Método para cargar los datos del modelo
+    // Método para cargar los datos de los modelos y la escena
     public void Load()
     {
         string[] paths = StandaloneFileBrowser.OpenFilePanel("Open File", "", "json", false);
@@ -104,82 +136,107 @@ public class SaveSystem : MonoBehaviour
             string path = paths[0];
             string json = File.ReadAllText(path); // Lee el JSON del archivo
 
-            ModelData data = JsonUtility.FromJson<ModelData>(json); // Convierte el JSON a objeto
-            StartCoroutine(LoadModelCoroutine(data)); // Inicia la corrutina para cargar el modelo
+            ModelList modelList = JsonUtility.FromJson<ModelList>(json); // Convierte el JSON a objeto
+            StartCoroutine(LoadModelsCoroutine(modelList)); // Inicia la corrutina para cargar los modelos
         }
     }
 
-    // Corrutina para cargar el modelo de forma asíncrona
-    private IEnumerator LoadModelCoroutine(ModelData data)
+    // Corrutina para cargar los modelos de forma asíncrona
+    private IEnumerator LoadModelsCoroutine(ModelList modelList)
     {
-        UnityWebRequest www = UnityWebRequest.Get(data.modelPath); // Solicitud para obtener el modelo
-        yield return www.SendWebRequest(); // Esperar a que la solicitud se complete
-
-        if (www.result != UnityWebRequest.Result.Success)
+        // Limpiar modelos actuales antes de cargar nuevos
+        foreach (GameObject model in models)
         {
-            Debug.Log("WWW ERROR: " + www.error); // Error si la solicitud falla
+            Destroy(model);
         }
-        else
+        models.Clear();
+        modelPaths.Clear();
+        materialPaths.Clear();
+
+        foreach (ModelData data in modelList.models)
         {
-            MemoryStream textStream = new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)); // Convierte la respuesta en un stream
-            GameObject loadedModel = new OBJLoader().Load(textStream); // Carga el modelo OBJ
+            UnityWebRequest www = UnityWebRequest.Get(data.modelPath); // Solicitud para obtener el modelo
+            yield return www.SendWebRequest(); // Esperar a que la solicitud se complete
 
-            // Asignar las transformaciones a todos los hijos
-            Transform[] childTransforms = loadedModel.GetComponentsInChildren<Transform>();
-            for (int i = 0; i < childTransforms.Length && i < data.transforms.Length; i++)
+            if (www.result != UnityWebRequest.Result.Success)
             {
-                TransformData tData = data.transforms[i];
-                Transform t = childTransforms[i];
-                t.position = tData.position;
-                t.rotation = tData.rotation;
-                t.localScale = tData.scale;
-                t.tag = tData.tag;
-
-                if (tData.hasBoxCollider)
-                {
-                    BoxCollider boxCollider = t.gameObject.AddComponent<BoxCollider>();
-                    boxCollider.center = tData.boxColliderCenter;
-                    boxCollider.size = tData.boxColliderSize;
-                }
+                Debug.Log("WWW ERROR: " + www.error); // Error si la solicitud falla
             }
-
-            if (!string.IsNullOrEmpty(data.materialPath))
+            else
             {
-                UnityWebRequest materialRequest = UnityWebRequestAssetBundle.GetAssetBundle(data.materialPath); // Solicitud para obtener el material
-                yield return materialRequest.SendWebRequest(); // Esperar a que la solicitud se complete
+                MemoryStream textStream = new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)); // Convierte la respuesta en un stream
+                GameObject loadedModel = new OBJLoader().Load(textStream); // Carga el modelo OBJ
 
-                if (materialRequest.result == UnityWebRequest.Result.Success)
+                // Asignar las transformaciones a todos los hijos
+                Transform[] childTransforms = loadedModel.GetComponentsInChildren<Transform>();
+                for (int i = 0; i < childTransforms.Length && i < data.transforms.Length; i++)
                 {
-                    AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(materialRequest); // Obtiene el bundle del material
-                    string[] assetNames = bundle.GetAllAssetNames(); // Obtiene los nombres de los assets en el bundle
-                    if (assetNames.Length > 0)
+                    TransformData tData = data.transforms[i];
+                    Transform t = childTransforms[i];
+                    t.position = tData.position;
+                    t.rotation = tData.rotation;
+                    t.localScale = tData.scale;
+                    t.tag = tData.tag;
+                    if (tData.hasBoxCollider)
                     {
-                        Material loadedMaterial = bundle.LoadAsset<Material>(assetNames[0]); // Carga el material
-                        SetMaterial(loadedModel, loadedMaterial); // Asigna el material al modelo
+                        BoxCollider boxCollider = t.gameObject.AddComponent<BoxCollider>();
+                        boxCollider.center = tData.boxColliderCenter;
+                        boxCollider.size = tData.boxColliderSize;
                     }
-                    bundle.Unload(false); // Descarga el bundle sin destruir los assets
+                }
+
+                if (!string.IsNullOrEmpty(data.materialPath))
+                {
+                    UnityWebRequest materialRequest = UnityWebRequestAssetBundle.GetAssetBundle(data.materialPath); // Solicitud para obtener el material
+                    yield return materialRequest.SendWebRequest(); // Esperar a que la solicitud se complete
+
+                    if (materialRequest.result == UnityWebRequest.Result.Success)
+                    {
+                        AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(materialRequest); // Obtiene el bundle del material
+                        string[] assetNames = bundle.GetAllAssetNames(); // Obtiene los nombres de los assets en el bundle
+                        if (assetNames.Length > 0)
+                        {
+                            Material loadedMaterial = bundle.LoadAsset<Material>(assetNames[0]); // Carga el material
+                            SetMaterial(loadedModel, loadedMaterial); // Asigna el material al modelo
+                        }
+                        bundle.Unload(false); // Descarga el bundle sin destruir los assets
+                    }
+                    else
+                    {
+                        SetMaterial(loadedModel, defaultMaterial); // Asigna el material por defecto si la solicitud falla
+                    }
                 }
                 else
                 {
                     SetMaterial(loadedModel, defaultMaterial); // Asigna el material por defecto si la solicitud falla
                 }
-            }
-            else
-            {
-                SetMaterial(loadedModel, defaultMaterial); // Asigna el material por defecto si la solicitud falla
-            }
 
-            // Establece el modelo cargado como el modelo actual
-            model = loadedModel;
+                // Agregar el modelo cargado a la lista de modelos actuales
+                models.Add(loadedModel);
+                modelPaths.Add(data.modelPath);
+                materialPaths.Add(data.materialPath);
+            }
         }
     }
 
-    // Método para asignar un material a todos los Renderers un modelo y sus hijos
+    // Método para asignar un material a todos los Renderers de un modelo y sus hijos
     private void SetMaterial(GameObject model, Material material)
     {
         foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>())
         {
             renderer.material = material; // Asigna el material proporcionado a cada Renderer
         }
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quit Game button pressed");
+
+        Application.Quit();
+
+        // Si estamos en el editor de Unity, detener la reproducción
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
