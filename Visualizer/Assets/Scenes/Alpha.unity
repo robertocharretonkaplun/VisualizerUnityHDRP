@@ -2429,7 +2429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &347114552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2442,19 +2442,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b75f2dfda9cfdc04ab665089240a19e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightMaterial: {fileID: 2100000, guid: 192b95d9911c3b2419e9fec9702adc01, type: 2}
-  selectionMaterial: {fileID: 2100000, guid: fae19271202dc6f44a39e0ec19b3750b, type: 2}
-  inputPosXGameObj: {fileID: 544331489}
-  inputPosYGameObj: {fileID: 1536620918}
-  inputPosZGameObj: {fileID: 95566021}
-  inputRotationXGameObj: {fileID: 228507725}
-  inputRotationYGameObj: {fileID: 1588758780}
-  inputRotationZGameObj: {fileID: 1621613486}
-  inputScaleXGameObj: {fileID: 114123572}
-  inputScaleYGameObj: {fileID: 130713252}
-  inputScaleZGameObj: {fileID: 589240463}
-  axisDropDownGameObj: {fileID: 93899902}
-  scaleDropDownGameObj: {fileID: 1250260968}
+  inputPosX: {fileID: 544331491}
+  inputPosY: {fileID: 1536620920}
+  inputPosZ: {fileID: 95566023}
+  inputRotationX: {fileID: 228507727}
+  inputRotationY: {fileID: 1588758782}
+  inputRotationZ: {fileID: 1621613488}
+  inputScaleX: {fileID: 114123574}
+  inputScaleY: {fileID: 130713254}
+  inputScaleZ: {fileID: 589240465}
+  selectTransformGizmo: {fileID: 732847827}
 --- !u!4 &347114553
 Transform:
   m_ObjectHideFlags: 0
@@ -10761,7 +10758,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1790929558
 RectTransform:
   m_ObjectHideFlags: 0
