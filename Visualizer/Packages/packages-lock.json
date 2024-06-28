@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "com.shtif.runtimetransformhandle": {
-      "version": "0.1.4",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "http://package.binaryego.com:4873"
-    },
     "com.unity.burst": {
       "version": "1.8.2",
       "depth": 1,
@@ -14,13 +7,6 @@
       "dependencies": {
         "com.unity.mathematics": "1.2.1"
       },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.collab-proxy": {
-      "version": "2.0.0",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.editorcoroutines": {
