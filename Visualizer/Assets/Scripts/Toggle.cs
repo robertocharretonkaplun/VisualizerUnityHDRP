@@ -7,6 +7,7 @@ public class Toggle: MonoBehaviour
     // Assign these in the Inspector
     public GameObject object1;
     public GameObject object2;
+    public GameObject object3;
     public TMP_Text statusText;
     public Button toggleButton;
 
@@ -36,6 +37,7 @@ public class Toggle: MonoBehaviour
     {
         object1.SetActive(isObject1Active);
         object2.SetActive(!isObject1Active);
+        object3.SetActive(!isObject1Active);
     }
 
     void UpdateStatusText()
