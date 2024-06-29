@@ -16,10 +16,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class TransformUI : MonoBehaviour
@@ -36,35 +33,86 @@ public class TransformUI : MonoBehaviour
     public SelectTransformGizmo selectTransformGizmo;
 
     private Transform selectedTransform;
+    private Vector3 lastPosition;
+    private Vector3 lastRotation;
+    private Vector3 lastScale;
 
-    private void Start()
+    void Start()
     {
-        // Add listeners for input fields
-        inputPosX.onEndEdit.AddListener(delegate { SetPosX(); });
-        inputPosY.onEndEdit.AddListener(delegate { SetPosY(); });
-        inputPosZ.onEndEdit.AddListener(delegate { SetPosZ(); });
-        inputRotationX.onEndEdit.AddListener(delegate { SetRotationX(); });
-        inputRotationY.onEndEdit.AddListener(delegate { SetRotationY(); });
-        inputRotationZ.onEndEdit.AddListener(delegate { SetRotationZ(); });
-        inputScaleX.onEndEdit.AddListener(delegate { SetScaleX(); });
-        inputScaleY.onEndEdit.AddListener(delegate { SetScaleY(); });
-        inputScaleZ.onEndEdit.AddListener(delegate { SetScaleZ(); });
+        // Subscribe to input field value changed events
+        inputPosX.onValueChanged.AddListener(delegate { UpdatePosition(); });
+        inputPosY.onValueChanged.AddListener(delegate { UpdatePosition(); });
+        inputPosZ.onValueChanged.AddListener(delegate { UpdatePosition(); });
 
+        inputRotationX.onValueChanged.AddListener(delegate { UpdateRotation(); });
+        inputRotationY.onValueChanged.AddListener(delegate { UpdateRotation(); });
+        inputRotationZ.onValueChanged.AddListener(delegate { UpdateRotation(); });
+
+        inputScaleX.onValueChanged.AddListener(delegate { UpdateScale(); });
+        inputScaleY.onValueChanged.AddListener(delegate { UpdateScale(); });
+        inputScaleZ.onValueChanged.AddListener(delegate { UpdateScale(); });
+
+        // Subscribe to selection change event
         selectTransformGizmo.OnSelectionChanged += UpdateUI;
     }
+    
 
-    private void OnDestroy()
+    void OnDestroy()
     {
+        // Unsubscribe from events
+        inputPosX.onValueChanged.RemoveAllListeners();
+        inputPosY.onValueChanged.RemoveAllListeners();
+        inputPosZ.onValueChanged.RemoveAllListeners();
+
+        inputRotationX.onValueChanged.RemoveAllListeners();
+        inputRotationY.onValueChanged.RemoveAllListeners();
+        inputRotationZ.onValueChanged.RemoveAllListeners();
+
+        inputScaleX.onValueChanged.RemoveAllListeners();
+        inputScaleY.onValueChanged.RemoveAllListeners();
+        inputScaleZ.onValueChanged.RemoveAllListeners();
+
         selectTransformGizmo.OnSelectionChanged -= UpdateUI;
     }
 
-    private void UpdateUI(Transform selected)
+    void Update()
     {
-        selectedTransform = selected;
-
+        // Check if selected transform has changed
         if (selectedTransform != null)
         {
-            UpdatePosUI();
+            // Check if position has changed
+            if (selectedTransform.position != lastPosition)
+            {
+                UpdatePositionUI();
+                lastPosition = selectedTransform.position;
+            }
+
+            // Check if rotation has changed
+            if (selectedTransform.eulerAngles != lastRotation)
+            {
+                UpdateRotationUI();
+                lastRotation = selectedTransform.eulerAngles;
+            }
+
+            // Check if scale has changed
+            if (selectedTransform.localScale != lastScale)
+            {
+                UpdateScaleUI();
+                lastScale = selectedTransform.localScale;
+            }
+        }
+    }
+
+    void UpdateUI(Transform newSelection)
+    {
+        selectedTransform = newSelection;
+        if (selectedTransform != null)
+        {
+            lastPosition = selectedTransform.position;
+            lastRotation = selectedTransform.eulerAngles;
+            lastScale = selectedTransform.localScale;
+
+            UpdatePositionUI();
             UpdateRotationUI();
             UpdateScaleUI();
         }
@@ -74,7 +122,7 @@ public class TransformUI : MonoBehaviour
         }
     }
 
-    private void ClearUI()
+    void ClearUI()
     {
         inputPosX.text = "";
         inputPosY.text = "";
@@ -87,119 +135,71 @@ public class TransformUI : MonoBehaviour
         inputScaleZ.text = "";
     }
 
-    // Position
-    private void UpdatePosUI()
+    void UpdatePositionUI()
     {
-        Vector3 currPos = selectedTransform.position;
-        inputPosX.text = currPos.x.ToString("F3");
-        inputPosY.text = currPos.y.ToString("F3");
-        inputPosZ.text = currPos.z.ToString("F3");
+        Vector3 pos = selectedTransform.position;
+        inputPosX.text = pos.x.ToString("F3");
+        inputPosY.text = pos.y.ToString("F3");
+        inputPosZ.text = pos.z.ToString("F3");
     }
 
-    public void SetPosX()
+    void UpdateRotationUI()
     {
-        if (float.TryParse(inputPosX.text, out float posX) && selectedTransform != null)
+        Vector3 rot = selectedTransform.eulerAngles;
+        inputRotationX.text = rot.x.ToString("F3");
+        inputRotationY.text = rot.y.ToString("F3");
+        inputRotationZ.text = rot.z.ToString("F3");
+    }
+
+    void UpdateScaleUI()
+    {
+        Vector3 scale = selectedTransform.localScale;
+        inputScaleX.text = scale.x.ToString("F3");
+        inputScaleY.text = scale.y.ToString("F3");
+        inputScaleZ.text = scale.z.ToString("F3");
+    }
+
+    void UpdatePosition()
+    {
+        if (selectedTransform != null)
         {
             Vector3 pos = selectedTransform.position;
-            pos.x = posX;
+            if (float.TryParse(inputPosX.text, out float newX))
+                pos.x = newX;
+            if (float.TryParse(inputPosY.text, out float newY))
+                pos.y = newY;
+            if (float.TryParse(inputPosZ.text, out float newZ))
+                pos.z = newZ;
             selectedTransform.position = pos;
         }
     }
 
-    public void SetPosY()
+    void UpdateRotation()
     {
-        if (float.TryParse(inputPosY.text, out float posY) && selectedTransform != null)
+        if (selectedTransform != null)
         {
-            Vector3 pos = selectedTransform.position;
-            pos.y = posY;
-            selectedTransform.position = pos;
+            Vector3 rot = selectedTransform.eulerAngles;
+            if (float.TryParse(inputRotationX.text, out float newX))
+                rot.x = newX;
+            if (float.TryParse(inputRotationY.text, out float newY))
+                rot.y = newY;
+            if (float.TryParse(inputRotationZ.text, out float newZ))
+                rot.z = newZ;
+            selectedTransform.eulerAngles = rot;
         }
     }
 
-    public void SetPosZ()
+    void UpdateScale()
     {
-        if (float.TryParse(inputPosZ.text, out float posZ) && selectedTransform != null)
-        {
-            Vector3 pos = selectedTransform.position;
-            pos.z = posZ;
-            selectedTransform.position = pos;
-        }
-    }
-
-    // Rotation
-    private void UpdateRotationUI()
-    {
-        Vector3 currRotation = selectedTransform.eulerAngles;
-        inputRotationX.text = currRotation.x.ToString("F3");
-        inputRotationY.text = currRotation.y.ToString("F3");
-        inputRotationZ.text = currRotation.z.ToString("F3");
-    }
-
-    public void SetRotationX()
-    {
-        if (float.TryParse(inputRotationX.text, out float rotationX) && selectedTransform != null)
-        {
-            Vector3 rotation = selectedTransform.eulerAngles;
-            rotation.x = rotationX;
-            selectedTransform.eulerAngles = rotation;
-        }
-    }
-
-    public void SetRotationY()
-    {
-        if (float.TryParse(inputRotationY.text, out float rotationY) && selectedTransform != null)
-        {
-            Vector3 rotation = selectedTransform.eulerAngles;
-            rotation.y = rotationY;
-            selectedTransform.eulerAngles = rotation;
-        }
-    }
-
-    public void SetRotationZ()
-    {
-        if (float.TryParse(inputRotationZ.text, out float rotationZ) && selectedTransform != null)
-        {
-            Vector3 rotation = selectedTransform.eulerAngles;
-            rotation.z = rotationZ;
-            selectedTransform.eulerAngles = rotation;
-        }
-    }
-
-    // Scale
-    private void UpdateScaleUI()
-    {
-        Vector3 currScale = selectedTransform.localScale;
-        inputScaleX.text = currScale.x.ToString("F3");
-        inputScaleY.text = currScale.y.ToString("F3");
-        inputScaleZ.text = currScale.z.ToString("F3");
-    }
-
-    public void SetScaleX()
-    {
-        if (float.TryParse(inputScaleX.text, out float scaleX) && selectedTransform != null)
+        if (selectedTransform != null)
         {
             Vector3 scale = selectedTransform.localScale;
-            scale.x = scaleX;
-            selectedTransform.localScale = scale;
-        }
-    }
-
-    public void SetScaleY()
-    {
-        if (float.TryParse(inputScaleY.text, out float scaleY) && selectedTransform != null)
-        {
-            Vector3 scale = selectedTransform.localScale;
-            scale.y = scaleY;
-            selectedTransform.localScale = scale;
-        }
-    }
-
-    public void SetScaleZ()
-    {
-        if (float.TryParse(inputScaleZ.text, out float scaleZ) && selectedTransform != null)
-        {
-            Vector3 scale = selectedTransform.localScale;
-            scale.z = scaleZ;
+            if (float.TryParse(inputScaleX.text, out float newX))
+                scale.x = newX;
+            if (float.TryParse(inputScaleY.text, out float newY))
+                scale.y = newY;
+            if (float.TryParse(inputScaleZ.text, out float newZ))
+                scale.z = newZ;
             selectedTransform.localScale = scale;
         }
     }

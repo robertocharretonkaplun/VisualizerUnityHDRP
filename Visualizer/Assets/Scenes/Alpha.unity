@@ -870,7 +870,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &93899903
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3806,7 +3806,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 4ba37d28597cc7e4e8a3aab0492021de, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 796cc94c8a3d31c4e8a90c8a7a9628c7, type: 2}
 --- !u!114 &535164224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7410,7 +7410,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1250260969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7470,7 +7470,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 347114552}
         m_TargetAssemblyTypeName: TransformUI, Assembly-CSharp
-        m_MethodName: OnScaleDropDownChange
+        m_MethodName: OnScaleModeChanged
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7479,7 +7479,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &1250260970
 MonoBehaviour:

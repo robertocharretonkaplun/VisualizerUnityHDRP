@@ -52,7 +52,7 @@ public class SelectTransformGizmo : MonoBehaviour
         runtimeTransformGameObj.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         // Highlight
         if (highlight != null)
@@ -171,6 +171,11 @@ public class SelectTransformGizmo : MonoBehaviour
                 }
             }
         }
+    }
+
+    public Transform GetCurrentSelection()
+    {
+        return selection;
     }
 
     private void ApplyLayerToChildren(GameObject parentGameObj)
