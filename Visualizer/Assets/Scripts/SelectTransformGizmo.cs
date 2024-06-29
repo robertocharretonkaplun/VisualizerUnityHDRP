@@ -15,6 +15,7 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +38,8 @@ public class SelectTransformGizmo : MonoBehaviour
     private int runtimeTransformLayer = 6;
     private int runtimeTransformLayerMask;
 
+    public event Action<Transform> OnSelectionChanged;
+
     private void Start()
     {
         runtimeTransformGameObj = new GameObject();
@@ -49,7 +52,7 @@ public class SelectTransformGizmo : MonoBehaviour
         runtimeTransformGameObj.SetActive(false);
     }
 
-    void Update()
+    private void Update()
     {
         // Highlight
         if (highlight != null)
@@ -88,34 +91,35 @@ public class SelectTransformGizmo : MonoBehaviour
                 if (Physics.Raycast(ray, out raycastHitHandle, Mathf.Infinity, runtimeTransformLayerMask)) //Raycast towards runtime transform handle only
                 {
                 }
-                else if (highlight) //Selecciona el objeto resaltando
+                else if (highlight) //Select the highlighted object
                 {
                     if (selection != null)
                     {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restaura el material original
+                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
                     }
                     selection = raycastHit.transform;
                     MeshRenderer selectionRenderer = selection.GetComponent<MeshRenderer>();
-                    if (!ArrayContainsMaterial(selectionRenderer.materials, selectionMaterial)) //Agrega el material de selección
+                    if (!ArrayContainsMaterial(selectionRenderer.materials, selectionMaterial)) //Add the selection material
                     {
-                        originalMaterialsSelection = originalMaterialsHighlight; //Guarda el material original
-                        Material[] newMaterials = new Material[originalMaterialsSelection.Length + 1]; //Crea un nuevo array de materiales
-                        originalMaterialsSelection.CopyTo(newMaterials, 0); //Copia los materiales originales al nuevo array
-                        newMaterials[newMaterials.Length - 1] = selectionMaterial; //Agrega el material de selección al nuevo array
-                        selectionRenderer.materials = newMaterials; //Asigna el nuevo array de materiales al objeto seleccionado
-                        runtimeTransformHandle.target = selection; //Asigna el objeto seleccionado al gizmo de transform en tiempo de ejecución
-                        runtimeTransformGameObj.SetActive(true); //Activa el manipulador de transformación en tiempo de ejecución
+                        originalMaterialsSelection = originalMaterialsHighlight; //Save the original material
+                        Material[] newMaterials = new Material[originalMaterialsSelection.Length + 1]; //Create a new material array
+                        originalMaterialsSelection.CopyTo(newMaterials, 0); //Copy the original materials to the new array
+                        newMaterials[newMaterials.Length - 1] = selectionMaterial; //Add the selection material to the new array
+                        selectionRenderer.materials = newMaterials; //Assign the new material array to the selected object
+                        runtimeTransformHandle.target = selection; //Assign the selected object to the runtime transform handle
+                        runtimeTransformGameObj.SetActive(true); //Activate the runtime transform handle
+                        OnSelectionChanged?.Invoke(selection); // Notify selection change
                     }
-                    highlight = null; //Desactiva el resaltado
+                    highlight = null; //Disable highlighting
                 }
                 else
                 {
                     if (selection)
                     {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restaura el material original
+                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
                         selection = null;
-
                         runtimeTransformGameObj.SetActive(false);
+                        OnSelectionChanged?.Invoke(null); // Notify selection change
                     }
                 }
             }
@@ -123,20 +127,21 @@ public class SelectTransformGizmo : MonoBehaviour
             {
                 if (selection)
                 {
-                    selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restaura el material original
+                    selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
                     selection = null;
-
-                    runtimeTransformGameObj.SetActive(false); //Desactiva el manipulador de transformación en tiempo de ejecución
+                    runtimeTransformGameObj.SetActive(false); //Deactivate the runtime transform handle
+                    OnSelectionChanged?.Invoke(null); // Notify selection change
                 }
             }
         }
 
-        // Función para eliminar el objeto seleccionado
+        // Function to delete the selected object
         if (Input.GetKeyDown(KeyCode.Delete) && selection != null)
         {
             Destroy(selection.gameObject);
             selection = null;
             runtimeTransformGameObj.SetActive(false);
+            OnSelectionChanged?.Invoke(null); // Notify selection change
         }
 
         // Hot Keys for move, rotate, scale, local and Global/World transform
@@ -168,6 +173,11 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
 
+    public Transform GetCurrentSelection()
+    {
+        return selection;
+    }
+
     private void ApplyLayerToChildren(GameObject parentGameObj)
     {
         foreach (Transform transform1 in parentGameObj.transform)
@@ -193,7 +203,7 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
 
-    private bool ArrayContainsMaterial(Material[] materials, Material material) //Revisa si un material ya existe en un array de materiales
+    private bool ArrayContainsMaterial(Material[] materials, Material material) //Check if a material already exists in an array of materials
     {
         foreach (var mat in materials)
         {

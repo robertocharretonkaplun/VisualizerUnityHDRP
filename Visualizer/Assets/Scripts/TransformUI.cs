@@ -16,488 +16,191 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using TMPro;
 
 public class TransformUI : MonoBehaviour
 {
-    public Material highlightMaterial;
-    public Material selectionMaterial;
-    public GameObject inputPosXGameObj;
-    public GameObject inputPosYGameObj;
-    public GameObject inputPosZGameObj;
-    public GameObject inputRotationXGameObj;
-    public GameObject inputRotationYGameObj;
-    public GameObject inputRotationZGameObj;
-    public GameObject inputScaleXGameObj;
-    public GameObject inputScaleYGameObj;
-    public GameObject inputScaleZGameObj;
-    public GameObject axisDropDownGameObj;
-    public GameObject scaleDropDownGameObj;
+    public TMP_InputField inputPosX;
+    public TMP_InputField inputPosY;
+    public TMP_InputField inputPosZ;
+    public TMP_InputField inputRotationX;
+    public TMP_InputField inputRotationY;
+    public TMP_InputField inputRotationZ;
+    public TMP_InputField inputScaleX;
+    public TMP_InputField inputScaleY;
+    public TMP_InputField inputScaleZ;
+    public SelectTransformGizmo selectTransformGizmo;
 
-    private Material[] originalMaterialHighlight;
-    private Material[] originalMaterialSelection;
-    private Transform highlight;
-    private Transform selection;
-    private Ray ray;
-    private RaycastHit raycastHit;
-    private TMP_InputField inputPosX;
-    private TMP_InputField inputPosY;
-    private TMP_InputField inputPosZ;
-    private TMP_InputField inputRotationX;
-    private TMP_InputField inputRotationY;
-    private TMP_InputField inputRotationZ;
-    private TMP_InputField inputScaleX;
-    private TMP_InputField inputScaleY;
-    private TMP_InputField inputScaleZ;
-    private float posX;
-    private float posY;
-    private float posZ;
-    private float rotationX;
-    private float rotationY;
-    private float rotationZ;
-    private float scaleX;
-    private float scaleY;
-    private float scaleZ;
-    private TMP_Dropdown axisDropDown;
-    private TMP_Dropdown scaleDropDown;
-    private bool isAxisGlobal = true;
-    private bool isScaleEven = true;
-    private GameObject runtimeTransformGameObj;
+    private Transform selectedTransform;
+    private Vector3 lastPosition;
+    private Vector3 lastRotation;
+    private Vector3 lastScale;
 
-    private void Start()
+    void Start()
     {
-        runtimeTransformGameObj = new GameObject();
-        inputPosX = inputPosXGameObj.GetComponent<TMP_InputField>();
-        inputPosY = inputPosYGameObj.GetComponent<TMP_InputField>();
-        inputPosZ = inputPosZGameObj.GetComponent<TMP_InputField>();
-        inputRotationX = inputRotationXGameObj.GetComponent<TMP_InputField>();
-        inputRotationY = inputRotationYGameObj.GetComponent<TMP_InputField>();
-        inputRotationZ = inputRotationZGameObj.GetComponent<TMP_InputField>();
-        inputScaleX = inputScaleXGameObj.GetComponent<TMP_InputField>();
-        inputScaleY = inputScaleYGameObj.GetComponent<TMP_InputField>();
-        inputScaleZ = inputScaleZGameObj.GetComponent<TMP_InputField>();
-        axisDropDown = axisDropDownGameObj.GetComponent<TMP_Dropdown>();
-        scaleDropDown = scaleDropDownGameObj.GetComponent<TMP_Dropdown>();
+        // Subscribe to input field value changed events
+        inputPosX.onValueChanged.AddListener(delegate { UpdatePosition(); });
+        inputPosY.onValueChanged.AddListener(delegate { UpdatePosition(); });
+        inputPosZ.onValueChanged.AddListener(delegate { UpdatePosition(); });
+
+        inputRotationX.onValueChanged.AddListener(delegate { UpdateRotation(); });
+        inputRotationY.onValueChanged.AddListener(delegate { UpdateRotation(); });
+        inputRotationZ.onValueChanged.AddListener(delegate { UpdateRotation(); });
+
+        inputScaleX.onValueChanged.AddListener(delegate { UpdateScale(); });
+        inputScaleY.onValueChanged.AddListener(delegate { UpdateScale(); });
+        inputScaleZ.onValueChanged.AddListener(delegate { UpdateScale(); });
+
+        // Subscribe to selection change event
+        selectTransformGizmo.OnSelectionChanged += UpdateUI;
+    }
+    
+
+    void OnDestroy()
+    {
+        // Unsubscribe from events
+        inputPosX.onValueChanged.RemoveAllListeners();
+        inputPosY.onValueChanged.RemoveAllListeners();
+        inputPosZ.onValueChanged.RemoveAllListeners();
+
+        inputRotationX.onValueChanged.RemoveAllListeners();
+        inputRotationY.onValueChanged.RemoveAllListeners();
+        inputRotationZ.onValueChanged.RemoveAllListeners();
+
+        inputScaleX.onValueChanged.RemoveAllListeners();
+        inputScaleY.onValueChanged.RemoveAllListeners();
+        inputScaleZ.onValueChanged.RemoveAllListeners();
+
+        selectTransformGizmo.OnSelectionChanged -= UpdateUI;
     }
 
     void Update()
     {
-        if (!Input.GetMouseButton(0))
+        // Check if selected transform has changed
+        if (selectedTransform != null)
         {
-            // Highlight
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (highlight != null)
+            // Check if position has changed
+            if (selectedTransform.position != lastPosition)
             {
-                highlight.GetComponent<MeshRenderer>().materials = originalMaterialHighlight; //Revertir el material original
-                highlight = null;
+                UpdatePositionUI();
+                lastPosition = selectedTransform.position;
             }
-            if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit)) 
-            {
-                highlight = raycastHit.transform;
-                if (highlight.CompareTag("Selectable") && highlight != selection)
-                {
-                    if (!ArrayContainsMaterial(highlight.GetComponent<MeshRenderer>().materials, highlightMaterial)) //Revisar si el material ya existe
-                    {
-                        originalMaterialHighlight = highlight.GetComponent<MeshRenderer>().materials; //Guardar el material original
-                        Material[] newMaterials = new Material[originalMaterialHighlight.Length + 1]; //Crear un nuevo array de materiales
-                        originalMaterialHighlight.CopyTo(newMaterials, 0); //Copiar los materiales originales al nuevo array
-                        newMaterials[newMaterials.Length - 1] = highlightMaterial; //Agregar el material de resaltado al nuevo array
-                        highlight.GetComponent<MeshRenderer>().materials = newMaterials; //Asignar el nuevo array de materiales al objeto resaltado
-                    }
-                }
-                else
-                {
-                    highlight = null;
-                }
-            }
-        }
 
-        // Selection
-        if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-        {
-            if (Physics.Raycast(ray, out raycastHit))
+            // Check if rotation has changed
+            if (selectedTransform.eulerAngles != lastRotation)
             {
-                if (highlight)
-                {
-                    if (selection != null)
-                    {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialSelection;
-                    }
-                    selection = raycastHit.transform;
-                    MeshRenderer selectionRenderer = selection.GetComponent<MeshRenderer>();
-                    if (!ArrayContainsMaterial(selectionRenderer.materials, selectionMaterial))
-                    {
-                        originalMaterialSelection = selectionRenderer.materials;
-                        Material[] newMaterials = new Material[originalMaterialSelection.Length + 1];
-                        originalMaterialSelection.CopyTo(newMaterials, 0);
-                        newMaterials[newMaterials.Length - 1] = selectionMaterial;
-                        selectionRenderer.materials = newMaterials;
-                    }
-                    highlight = null;
-                }
-                else
-                {
-                    if (selection)
-                    {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialSelection;
-                        selection = null;
-                    }
-                }
+                UpdateRotationUI();
+                lastRotation = selectedTransform.eulerAngles;
             }
-            else
+
+            // Check if scale has changed
+            if (selectedTransform.localScale != lastScale)
             {
-                if (selection)
-                {
-                    selection.GetComponent<MeshRenderer>().materials = originalMaterialSelection;
-                    selection = null;
-                }
+                UpdateScaleUI();
+                lastScale = selectedTransform.localScale;
             }
-        }
-
-        if (selection && !inputPosX.isFocused && !inputPosY.isFocused && !inputPosZ.isFocused)
-        {
-            GetSelectedPos();
-        }
-        if (selection && !inputRotationX.isFocused && !inputRotationY.isFocused && !inputRotationZ.isFocused)
-        {
-            GetSelectedRotation();
-        }
-        if (selection && !inputScaleX.isFocused && !inputScaleY.isFocused && !inputScaleZ.isFocused)
-        {
-            GetSelectedScale();
-        }
-
-        // Función para eliminar el objeto seleccionado
-        if (Input.GetKeyDown(KeyCode.Delete) && selection != null)
-        {
-            Destroy(selection.gameObject);
-            selection = null;
-            runtimeTransformGameObj.SetActive(false);
         }
     }
 
-    /// ----------------------------------------------///
-    /// Position
-    /// ----------------------------------------------///
-    private void GetSelectedPos()
+    void UpdateUI(Transform newSelection)
     {
-        if (selection)
+        selectedTransform = newSelection;
+        if (selectedTransform != null)
         {
-            Vector3 currPos;
-            if (isAxisGlobal)
-            {
-                currPos = selection.position;
-            }
-            else
-            {
-                currPos = selection.InverseTransformPoint(selection.position); //world to local
-            }
-            inputPosXGameObj.SetActive(true);
-            inputPosYGameObj.SetActive(true);
-            inputPosZGameObj.SetActive(true);
-            posX = currPos.x;
-            posY = currPos.y;
-            posZ = currPos.z;
-            posX = Mathf.Round(posX * 1000f) / 1000f;
-            posY = Mathf.Round(posY * 1000f) / 1000f;
-            posZ = Mathf.Round(posZ * 1000f) / 1000f;
-            inputPosX.text = posX.ToString();
-            inputPosY.text = posY.ToString();
-            inputPosZ.text = posZ.ToString();
+            lastPosition = selectedTransform.position;
+            lastRotation = selectedTransform.eulerAngles;
+            lastScale = selectedTransform.localScale;
+
+            UpdatePositionUI();
+            UpdateRotationUI();
+            UpdateScaleUI();
         }
         else
         {
-            inputPosXGameObj.SetActive(false);
-            inputPosYGameObj.SetActive(false);
-            inputPosZGameObj.SetActive(false);
+            ClearUI();
         }
     }
 
-    public void SetPosX()
+    void ClearUI()
     {
-        if (float.TryParse(inputPosX.text, out posX))
-        {
-            SetSelectedPos();
-        }
+        inputPosX.text = "";
+        inputPosY.text = "";
+        inputPosZ.text = "";
+        inputRotationX.text = "";
+        inputRotationY.text = "";
+        inputRotationZ.text = "";
+        inputScaleX.text = "";
+        inputScaleY.text = "";
+        inputScaleZ.text = "";
     }
-    public void SetPosY()
+
+    void UpdatePositionUI()
     {
-        if (float.TryParse(inputPosY.text, out posY))
-        {
-            SetSelectedPos();
-        }
+        Vector3 pos = selectedTransform.position;
+        inputPosX.text = pos.x.ToString("F3");
+        inputPosY.text = pos.y.ToString("F3");
+        inputPosZ.text = pos.z.ToString("F3");
     }
-    public void SetPosZ()
+
+    void UpdateRotationUI()
     {
-        if (float.TryParse(inputPosZ.text, out posZ))
+        Vector3 rot = selectedTransform.eulerAngles;
+        inputRotationX.text = rot.x.ToString("F3");
+        inputRotationY.text = rot.y.ToString("F3");
+        inputRotationZ.text = rot.z.ToString("F3");
+    }
+
+    void UpdateScaleUI()
+    {
+        Vector3 scale = selectedTransform.localScale;
+        inputScaleX.text = scale.x.ToString("F3");
+        inputScaleY.text = scale.y.ToString("F3");
+        inputScaleZ.text = scale.z.ToString("F3");
+    }
+
+    void UpdatePosition()
+    {
+        if (selectedTransform != null)
         {
-            SetSelectedPos();
+            Vector3 pos = selectedTransform.position;
+            if (float.TryParse(inputPosX.text, out float newX))
+                pos.x = newX;
+            if (float.TryParse(inputPosY.text, out float newY))
+                pos.y = newY;
+            if (float.TryParse(inputPosZ.text, out float newZ))
+                pos.z = newZ;
+            selectedTransform.position = pos;
         }
     }
 
-    public void SetSelectedPos()
+    void UpdateRotation()
     {
-        if (selection)
+        if (selectedTransform != null)
         {
-            if (isAxisGlobal)
-            {
-                selection.position = new Vector3(posX, posY, posZ);
-            }
-            else
-            {
-                selection.position = selection.TransformPoint(new Vector3(posX, posY, posZ)); //local to world
-            }
+            Vector3 rot = selectedTransform.eulerAngles;
+            if (float.TryParse(inputRotationX.text, out float newX))
+                rot.x = newX;
+            if (float.TryParse(inputRotationY.text, out float newY))
+                rot.y = newY;
+            if (float.TryParse(inputRotationZ.text, out float newZ))
+                rot.z = newZ;
+            selectedTransform.eulerAngles = rot;
         }
     }
 
-
-    /// ----------------------------------------------///
-    /// Rotation
-    /// ----------------------------------------------///
-    private void GetSelectedRotation()
+    void UpdateScale()
     {
-        if (selection)
+        if (selectedTransform != null)
         {
-            Vector3 currRotation;
-            if (isAxisGlobal)
-            {
-                currRotation = selection.eulerAngles;
-            }
-            else
-            {
-                currRotation = Vector3.zero;
-            }
-            inputRotationXGameObj.SetActive(true);
-            inputRotationYGameObj.SetActive(true);
-            inputRotationZGameObj.SetActive(true);
-            rotationX = currRotation.x;
-            rotationY = currRotation.y;
-            rotationZ = currRotation.z;
-            rotationX = Mathf.Round(rotationX * 1000f) / 1000f;
-            rotationY = Mathf.Round(rotationY * 1000f) / 1000f;
-            rotationZ = Mathf.Round(rotationZ * 1000f) / 1000f;
-            inputRotationX.text = rotationX.ToString();
-            inputRotationY.text = rotationY.ToString();
-            inputRotationZ.text = rotationZ.ToString();
+            Vector3 scale = selectedTransform.localScale;
+            if (float.TryParse(inputScaleX.text, out float newX))
+                scale.x = newX;
+            if (float.TryParse(inputScaleY.text, out float newY))
+                scale.y = newY;
+            if (float.TryParse(inputScaleZ.text, out float newZ))
+                scale.z = newZ;
+            selectedTransform.localScale = scale;
         }
-        else
-        {
-            inputRotationXGameObj.SetActive(false);
-            inputRotationYGameObj.SetActive(false);
-            inputRotationZGameObj.SetActive(false);
-        }
-    }
-
-    public void SetRotationX()
-    {
-        if (float.TryParse(inputRotationX.text, out rotationX))
-        {
-            SetSelectedRotation();
-        }
-    }
-    public void SetRotationY()
-    {
-        if (float.TryParse(inputRotationY.text, out rotationY))
-        {
-            SetSelectedRotation();
-        }
-    }
-    public void SetRotationZ()
-    {
-        if (float.TryParse(inputRotationZ.text, out rotationZ))
-        {
-            SetSelectedRotation();
-        }
-    }
-
-    public void SetSelectedRotation()
-    {
-        if (selection)
-        {
-            if (isAxisGlobal)
-            {
-                selection.eulerAngles = new Vector3(rotationX, rotationY, rotationZ);
-            }
-            else
-            {
-                selection.eulerAngles = selection.eulerAngles + selection.TransformVector(new Vector3(rotationX, rotationY, rotationZ));
-                rotationX = 0.0f;
-                rotationY = 0.0f;
-                rotationZ = 0.0f;
-            }
-        }
-    }
-
-
-    /// ----------------------------------------------///
-    /// Scale
-    /// ----------------------------------------------///
-    private void GetSelectedScale()
-    {
-        if (selection)
-        {
-            Vector3 currScale;
-            if (isAxisGlobal)
-            {
-                currScale = selection.lossyScale;
-            }
-            else
-            {
-                currScale = Vector3.one;
-            }
-            inputScaleXGameObj.SetActive(true);
-            inputScaleYGameObj.SetActive(true);
-            inputScaleZGameObj.SetActive(true);
-            scaleX = currScale.x;
-            scaleY = currScale.y;
-            scaleZ = currScale.z;
-            scaleX = Mathf.Round(scaleX * 1000f) / 1000f;
-            scaleY = Mathf.Round(scaleY * 1000f) / 1000f;
-            scaleZ = Mathf.Round(scaleZ * 1000f) / 1000f;
-            inputScaleX.text = scaleX.ToString();
-            inputScaleY.text = scaleY.ToString();
-            inputScaleZ.text = scaleZ.ToString();
-        }
-        else
-        {
-            inputScaleXGameObj.SetActive(false);
-            inputScaleYGameObj.SetActive(false);
-            inputScaleZGameObj.SetActive(false);
-        }
-    }
-
-    public void SetScaleX()
-    {
-        if (float.TryParse(inputScaleX.text, out scaleX))
-        {
-            if (isScaleEven)
-            {
-                float scaleDiff;
-                if (isAxisGlobal)
-                {
-                    scaleDiff = scaleX / selection.localScale.x;
-                }
-                else
-                {
-                    scaleDiff = scaleX;
-                }
-                scaleX = selection.localScale.x * scaleDiff;
-                scaleY = selection.localScale.y * scaleDiff;
-                scaleZ = selection.localScale.z * scaleDiff;
-            }
-            else if(!isAxisGlobal)
-            {
-                scaleX = selection.localScale.x * scaleX;
-                scaleY = selection.localScale.y;
-                scaleZ = selection.localScale.z;
-            }
-            SetSelectedScale();
-        }
-    }
-    public void SetScaleY()
-    {
-        if (float.TryParse(inputScaleY.text, out scaleY))
-        {
-            if (isScaleEven)
-            {
-                float scaleDiff;
-                if (isAxisGlobal)
-                {
-                    scaleDiff = scaleY / selection.localScale.y;
-                }
-                else
-                {
-                    scaleDiff = scaleY;
-                }
-                scaleX = selection.localScale.x * scaleDiff;
-                scaleY = selection.localScale.y * scaleDiff;
-                scaleZ = selection.localScale.z * scaleDiff;
-            }
-            else if (!isAxisGlobal)
-            {
-                scaleX = selection.localScale.x;
-                scaleY = selection.localScale.y * scaleY;
-                scaleZ = selection.localScale.z;
-            }
-            SetSelectedScale();
-        }
-    }
-    public void SetScaleZ()
-    {
-        if (float.TryParse(inputScaleZ.text, out scaleZ))
-        {
-            if (isScaleEven)
-            {
-                float scaleDiff;
-                if (isAxisGlobal)
-                {
-                    scaleDiff = scaleZ / selection.localScale.z;
-                }
-                else
-                {
-                    scaleDiff = scaleZ;
-                }
-                scaleX = selection.localScale.x * scaleDiff;
-                scaleY = selection.localScale.y * scaleDiff;
-                scaleZ = selection.localScale.z * scaleDiff;
-            }
-            else if (!isAxisGlobal)
-            {
-                scaleX = selection.localScale.x;
-                scaleY = selection.localScale.y;
-                scaleZ = selection.localScale.z * scaleZ;
-            }
-            SetSelectedScale();
-        }
-    }
-
-    public void SetSelectedScale()
-    {
-        if (selection)
-        {
-            selection.localScale = new Vector3(scaleX, scaleY, scaleZ);
-        }
-    }
-
-    //Axis drop down menu
-    public void OnAxisDropDownChange()
-    {
-        if (axisDropDown.value == 0)
-        {
-            isAxisGlobal = true;
-        }
-        else
-        {
-            isAxisGlobal = false;
-        }
-    }
-
-    //Scale drop down menu
-    public void OnScaleDropDownChange()
-    {
-        if (scaleDropDown.value == 0)
-        {
-            isScaleEven = true;
-        }
-        else
-        {
-            isScaleEven = false;
-        }
-    }
-
-    private bool ArrayContainsMaterial(Material[] materials, Material material) //Revisa si un material ya existe en un array de materiales
-    {
-        foreach (var mat in materials)
-        {
-            if (mat == material)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 }
