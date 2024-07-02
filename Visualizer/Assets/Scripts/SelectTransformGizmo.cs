@@ -21,11 +21,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using RuntimeHandle;
+using RuntimeInspectorNamespace;
 
 public class SelectTransformGizmo : MonoBehaviour
 {
     public Material highlightMaterial;
     public Material selectionMaterial;
+    public RuntimeHierarchy runtimeHierarchy; // Reference to the RuntimeHierarchy
 
     private Material[] originalMaterialsHighlight;
     private Material[] originalMaterialsSelection;
@@ -50,6 +52,8 @@ public class SelectTransformGizmo : MonoBehaviour
         runtimeTransformHandle.autoScale = true;
         runtimeTransformHandle.autoScaleFactor = 1.0f;
         runtimeTransformGameObj.SetActive(false);
+
+        OnSelectionChanged += HandleSelectionChanged; // Subscribe to the event
     }
 
     private void Update()
@@ -213,5 +217,13 @@ public class SelectTransformGizmo : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private void HandleSelectionChanged(Transform newSelection)
+    {
+        if (runtimeHierarchy != null)
+        {
+            runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Update RuntimeHierarchy selection
+        }
     }
 }
