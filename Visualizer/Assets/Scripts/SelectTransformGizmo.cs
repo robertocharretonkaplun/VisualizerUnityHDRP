@@ -25,13 +25,10 @@ using RuntimeInspectorNamespace;
 
 public class SelectTransformGizmo : MonoBehaviour
 {
-    public Material highlightMaterial;
     public Material selectionMaterial;
     public RuntimeHierarchy runtimeHierarchy; // Reference to the RuntimeHierarchy
 
-    private Material[] originalMaterialsHighlight;
-    private Material[] originalMaterialsSelection;
-    private Transform highlight;
+    private Dictionary<Transform, Material[]> originalMaterialsSelection = new Dictionary<Transform, Material[]>();
     private Transform selection;
     private RaycastHit raycastHit;
     private RaycastHit raycastHitHandle;
@@ -58,33 +55,7 @@ public class SelectTransformGizmo : MonoBehaviour
 
     private void Update()
     {
-        // Highlight
-        if (highlight != null)
-        {
-            highlight.GetComponent<MeshRenderer>().materials = originalMaterialsHighlight;
-            highlight = null;
-        }
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!EventSystem.current.IsPointerOverGameObject() && Physics.Raycast(ray, out raycastHit)) //Make sure you have EventSystem in the hierarchy before using EventSystem
-        {
-            highlight = raycastHit.transform;
-            if (highlight.CompareTag("Selectable") && highlight != selection)
-            {
-                MeshRenderer highlightRenderer = highlight.GetComponent<MeshRenderer>();
-                if (!ArrayContainsMaterial(highlightRenderer.materials, highlightMaterial))
-                {
-                    originalMaterialsHighlight = highlightRenderer.materials;
-                    Material[] newMaterials = new Material[originalMaterialsHighlight.Length + 1];
-                    originalMaterialsHighlight.CopyTo(newMaterials, 0);
-                    newMaterials[newMaterials.Length - 1] = highlightMaterial;
-                    highlightRenderer.materials = newMaterials;
-                }
-            }
-            else
-            {
-                highlight = null;
-            }
-        }
 
         // Selection
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
@@ -94,33 +65,36 @@ public class SelectTransformGizmo : MonoBehaviour
             {
                 if (Physics.Raycast(ray, out raycastHitHandle, Mathf.Infinity, runtimeTransformLayerMask)) //Raycast towards runtime transform handle only
                 {
+                    // Do nothing if hit the runtime transform handle
                 }
-                else if (highlight) //Select the highlighted object
+                else if (raycastHit.transform.CompareTag("Selectable")) // Check if the object is selectable
                 {
                     if (selection != null)
                     {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
+                        SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
                     }
                     selection = raycastHit.transform;
-                    MeshRenderer selectionRenderer = selection.GetComponent<MeshRenderer>();
-                    if (!ArrayContainsMaterial(selectionRenderer.materials, selectionMaterial)) //Add the selection material
+                    MeshRenderer[] selectionRenderers = GetMeshRenderers(selection);
+                    foreach (MeshRenderer renderer in selectionRenderers)
                     {
-                        originalMaterialsSelection = originalMaterialsHighlight; //Save the original material
-                        Material[] newMaterials = new Material[originalMaterialsSelection.Length + 1]; //Create a new material array
-                        originalMaterialsSelection.CopyTo(newMaterials, 0); //Copy the original materials to the new array
-                        newMaterials[newMaterials.Length - 1] = selectionMaterial; //Add the selection material to the new array
-                        selectionRenderer.materials = newMaterials; //Assign the new material array to the selected object
-                        runtimeTransformHandle.target = selection; //Assign the selected object to the runtime transform handle
-                        runtimeTransformGameObj.SetActive(true); //Activate the runtime transform handle
-                        OnSelectionChanged?.Invoke(selection); // Notify selection change
+                        if (!ArrayContainsMaterial(renderer.materials, selectionMaterial)) //Add the selection material
+                        {
+                            originalMaterialsSelection[renderer.transform] = renderer.materials; //Save the original material
+                            Material[] newMaterials = new Material[renderer.materials.Length + 1]; //Create a new material array
+                            renderer.materials.CopyTo(newMaterials, 0); //Copy the original materials to the new array
+                            newMaterials[newMaterials.Length - 1] = selectionMaterial; //Add the selection material to the new array
+                            renderer.materials = newMaterials; //Assign the new material array to the selected object
+                        }
                     }
-                    highlight = null; //Disable highlighting
+                    runtimeTransformHandle.target = selection; //Assign the selected object to the runtime transform handle
+                    runtimeTransformGameObj.SetActive(true); //Activate the runtime transform handle
+                    OnSelectionChanged?.Invoke(selection); // Notify selection change
                 }
                 else
                 {
                     if (selection)
                     {
-                        selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
+                        SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
                         selection = null;
                         runtimeTransformGameObj.SetActive(false);
                         OnSelectionChanged?.Invoke(null); // Notify selection change
@@ -131,7 +105,7 @@ public class SelectTransformGizmo : MonoBehaviour
             {
                 if (selection)
                 {
-                    selection.GetComponent<MeshRenderer>().materials = originalMaterialsSelection; //Restore the original material
+                    SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
                     selection = null;
                     runtimeTransformGameObj.SetActive(false); //Deactivate the runtime transform handle
                     OnSelectionChanged?.Invoke(null); // Notify selection change
@@ -224,6 +198,28 @@ public class SelectTransformGizmo : MonoBehaviour
         if (runtimeHierarchy != null)
         {
             runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Update RuntimeHierarchy selection
+        }
+    }
+
+    private MeshRenderer[] GetMeshRenderers(Transform transform)
+    {
+        List<MeshRenderer> renderers = new List<MeshRenderer>(transform.GetComponentsInChildren<MeshRenderer>());
+        return renderers.ToArray();
+    }
+
+    private void SetMaterials(Transform transform, Dictionary<Transform, Material[]> materialsDict, bool isSelection)
+    {
+        MeshRenderer[] renderers = GetMeshRenderers(transform);
+        foreach (MeshRenderer renderer in renderers)
+        {
+            if (materialsDict.TryGetValue(renderer.transform, out Material[] originalMaterials))
+            {
+                renderer.materials = originalMaterials;
+                if (isSelection)
+                {
+                    materialsDict.Remove(renderer.transform);
+                }
+            }
         }
     }
 }
