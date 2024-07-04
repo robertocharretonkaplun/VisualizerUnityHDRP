@@ -413,8 +413,10 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
-  m_ObsoleteDefaultVolumeProfile: {fileID: 11400000, guid: 7f342610b85f4164f808a1f380dcc668, type: 2}
-  m_ObsoleteDefaultLookDevProfile: {fileID: 11400000, guid: 254320a857a30444da2c99496a186368, type: 2}
+  m_ObsoleteDefaultVolumeProfile: {fileID: 11400000, guid: 7f342610b85f4164f808a1f380dcc668,
+    type: 2}
+  m_ObsoleteDefaultLookDevProfile: {fileID: 11400000, guid: 254320a857a30444da2c99496a186368,
+    type: 2}
   m_ObsoleteFrameSettingsMovedToDefaultSettings:
     bitDatas:
       data1: 140666621263709
@@ -460,7 +462,8 @@ MonoBehaviour:
     sssCustomSampleBudget: 20
     msaaMode: 1
     materialQuality: 0
-  m_ObsoleteRenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7, type: 2}
+  m_ObsoleteRenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7,
+    type: 2}
   m_ObsoleteRenderPipelineRayTracingResources: {fileID: 0}
   m_ObsoleteBeforeTransparentCustomPostProcesses: []
   m_ObsoleteBeforePostProcessCustomPostProcesses: []
