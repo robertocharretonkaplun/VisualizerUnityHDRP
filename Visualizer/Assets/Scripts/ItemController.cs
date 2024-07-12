@@ -6,7 +6,7 @@ public class ItemController : MonoBehaviour
 {
     public int itemID; // ID del item 
     
-    public TextMeshProUGUI itemAmountText; // Texto de la cantidad de items
+    
     public bool Clicked = false; // Si el item fue clickeado
     private LevelEditor_Manager levelEditor_Manager; // Manager del editor de niveles
     void Start()
