@@ -27,9 +27,15 @@ public class LevelEditor_Manager : MonoBehaviour
                 // Calcular la posicion donde se va a instanciar el objeto
                 Vector3 spawnPosition = ray.GetPoint(distance);
 
-                // Crear el comando y ejecutarlo a través del CommandManager
+                // Obtener el prefab y su rotación
                 var itemPrefab = ItemPrefabs[CurrentButtonPressed];
-                var placeItemCommand = new PlaceItemCommand(itemPrefab, spawnPosition, Quaternion.identity);
+                Quaternion spawnRotation = itemPrefab.transform.rotation;
+
+                // Ajustar la posición en Y del objeto basado en el prefab
+                spawnPosition.y = itemPrefab.transform.position.y;
+
+                // Crear el comando y ejecutarlo a través del CommandManager
+                var placeItemCommand = new PlaceItemCommand(itemPrefab, spawnPosition, spawnRotation);
                 commandManager.ExecuteCommand(placeItemCommand);
             }
         }
