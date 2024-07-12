@@ -12,42 +12,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b145d2b9ee1ac4f846968484e7485a, type: 3}
   m_Name: ContactShadows
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   quality:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 3
   enable:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   length:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0.05
   opacity:
     m_OverrideState: 0
     m_Value: 1
   distanceScaleFactor:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0.5
   maxDistance:
     m_OverrideState: 0
     m_Value: 50
   minDistance:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   fadeDistance:
     m_OverrideState: 0
     m_Value: 5
   fadeInDistance:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   rayBias:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   thicknessScale:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0.15
   m_SampleCount:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 24
 --- !u!114 &-7045460808225037193
 MonoBehaviour:
@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59b6606ef2548734bb6d11b9d160bc7e, type: 3}
   m_Name: HDRISky
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   rotation:
     m_OverrideState: 1
     m_Value: 116
@@ -435,12 +435,12 @@ MonoBehaviour:
     m_Value: 0
   skyAmbientMode:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   windOrientation:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   windSpeed:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   fogType:
     m_OverrideState: 1
@@ -712,7 +712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e9e4ed5a6f56fb4ebd693e39684f36f, type: 3}
   m_Name: VolumetricClouds
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enable:
     m_OverrideState: 1
     m_Value: 1
@@ -1089,7 +1089,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ddcec8a8eb2d684d833ac8f5d26aebd, type: 3}
   m_Name: HDShadowSettings
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   maxShadowDistance:
     m_OverrideState: 1
     m_Value: 150
