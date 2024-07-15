@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_RenderPipelineSettings:
     supportShadowMask: 0
-    supportSSR: 0
+    supportSSR: 1
     supportSSRTransparent: 0
     supportSSAO: 1
-    supportSSGI: 0
+    supportSSGI: 1
     supportSubsurfaceScattering: 1
     sssSampleBudget:
       m_Values: 140000002800000050000000
       m_SchemaId:
         m_Id: With3Levels
-    supportVolumetrics: 1
+    supportVolumetrics: 0
     supportVolumetricClouds: 0
     supportLightLayers: 1
     supportDistortion: 1
@@ -77,21 +77,21 @@ MonoBehaviour:
       maxLocalVolumetricFogSize: 32
       maxLocalVolumetricFogOnScreen: 64
     hdShadowInitParams:
-      maxShadowRequests: 128
-      directionalShadowsDepthBits: 16
+      maxShadowRequests: 256
+      directionalShadowsDepthBits: 32
       shadowFilteringQuality: 2
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 16
         useDynamicViewportRescale: 1
       areaLightShadowAtlas:
-        shadowAtlasResolution: 4096
+        shadowAtlasResolution: 8192
         shadowAtlasDepthBits: 16
         useDynamicViewportRescale: 0
       cachedPunctualLightShadowAtlas: 4096
-      cachedAreaLightShadowAtlas: 4096
+      cachedAreaLightShadowAtlas: 8192
       shadowResolutionDirectional:
-        m_Values: 00020000000400000008000000100000
+        m_Values: 00100000001000000010000070170000
         m_SchemaId:
           m_Id: With4Levels
       shadowResolutionPunctual:
@@ -99,14 +99,14 @@ MonoBehaviour:
         m_SchemaId:
           m_Id: With4Levels
       shadowResolutionArea:
-        m_Values: 00020000000400000008000000100000
+        m_Values: 00020000000400000008000088130000
         m_SchemaId:
           m_Id: With4Levels
-      maxDirectionalShadowMapResolution: 4096
+      maxDirectionalShadowMapResolution: 6000
       maxPunctualShadowMapResolution: 4096
-      maxAreaShadowMapResolution: 4096
+      maxAreaShadowMapResolution: 5000
       supportScreenSpaceShadows: 0
-      maxScreenSpaceShadowSlots: 4
+      maxScreenSpaceShadowSlots: 5
       screenSpaceShadowBufferFormat: 48
     decalSettings:
       drawDistance: 1000
@@ -140,6 +140,7 @@ MonoBehaviour:
       singlePass: 1
       occlusionMesh: 1
       cameraJitter: 0
+      allowMotionBlur: 1
     postProcessQualitySettings:
       NearBlurSampleCount: 030000000500000008000000
       NearBlurMaxRadius:
@@ -161,7 +162,7 @@ MonoBehaviour:
       ChromaticAberrationMaxSamples: 03000000060000000c000000
     lightSettings:
       useContactShadow:
-        m_Values: 000101
+        m_Values: 000001
         m_SchemaId:
           m_Id: 
     maximumLODLevel:
@@ -181,7 +182,7 @@ MonoBehaviour:
       AOMaximumRadiusPixels: 200000002800000050000000
       AOBilateralUpsample: 000101
       AODirectionCount: 010000000200000004000000
-      ContactShadowSampleCount: 060000000a00000010000000
+      ContactShadowSampleCount: 400000004000000040000000
       SSRMaxRaySteps: 100000002000000040000000
       SSGIRaySteps: 200000004000000080000000
       SSGIDenoise: 010101
