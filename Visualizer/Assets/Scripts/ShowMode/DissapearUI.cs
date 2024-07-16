@@ -8,18 +8,21 @@ using UnityEngine.UI;
 /// </summary>
 public class DissapearUI : MonoBehaviour
 {
+    //DEPRECIATE
+    // We initialize the button array to save any buttons that we nedd dissapear
+    //public Button[] Buttons;
 
     /// <summary>
-    /// We initialize the button array to save any buttons that we nedd dissapear
+    /// Create a array to ui objects to save all gameobjects in layer UI
     /// The boolean is only to show us the state of the buttons
     /// </summary>
-
-    //public Button[] Buttons;
+    
     [SerializeField] private bool ButtonsActive;
     private GameObject[] uiObjects;
 
     /// <summary>
     /// Initialize the boolean true because when we load scene the UI is turn on
+    /// Call all gameobjects in layer UI and save in uiObjects
     /// </summary>
     void Start()
     {
@@ -36,7 +39,6 @@ public class DissapearUI : MonoBehaviour
     void Update()
     {
         UiOff_On();
-        //UiOff_On(); 
     }
 
     /// <summary>
@@ -44,6 +46,7 @@ public class DissapearUI : MonoBehaviour
     /// </summary>
     public void UiOff_On()
     {
+        //DEPRECIATE
         /*if (ButtonsActive == true)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -66,7 +69,9 @@ public class DissapearUI : MonoBehaviour
                 }
                 ButtonsActive = true;
             }
-        }*/
+        }
+        --------------------------------------------------------------------------------*/
+
         if (ButtonsActive == true)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
