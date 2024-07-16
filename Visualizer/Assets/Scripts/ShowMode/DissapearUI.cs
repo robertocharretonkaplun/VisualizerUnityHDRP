@@ -3,49 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is to turn off and turn on the UI 
+/// </summary>
 public class DissapearUI : MonoBehaviour
 {
-    public Button[] Buttons;
+
+    /// <summary>
+    /// We initialize the button array to save any buttons that we nedd dissapear
+    /// The boolean is only to show us the state of the buttons
+    /// </summary>
+
+    //public Button[] Buttons;
     [SerializeField] private bool ButtonsActive;
-    // Start is called before the first frame update
+    private GameObject[] uiObjects;
+
+    /// <summary>
+    /// Initialize the boolean true because when we load scene the UI is turn on
+    /// </summary>
     void Start()
     {
-        Time.timeScale = 1f;
         ButtonsActive = true;
+        int layer = LayerMask.NameToLayer("UI");
+        uiObjects = FindObjectsOfType<GameObject>();
+        uiObjects = System.Array.FindAll(uiObjects, obj => obj.layer == layer);
     }
 
-    // Update is called once per frame
+    
+    /// <summary>
+    /// Call void to turn on/off UI
+    /// </summary>
     void Update()
     {
-        UiOff_On(); 
+        UiOff_On();
+        //UiOff_On(); 
     }
 
-    private void FixedUpdate()
-    {
-        if(Time.timeScale > 0f) 
-        {
-            Debug.Log("Animacion");
-        }
-        else if(Time.timeScale < 1f) 
-        {
-            Debug.Log("Pausa");
-        }
-        
-    }
-
-    public void Play()
-    {
-        Time.timeScale = 1.0f;
-    }
-
-    public void Pause()
-    {
-        Time.timeScale = 0f;
-    }
-
+    /// <summary>
+    /// This void control the state changes from UI with the escape button, this button is the switch
+    /// </summary>
     public void UiOff_On()
     {
-        if (ButtonsActive == true)
+        /*if (ButtonsActive == true)
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
@@ -67,13 +66,32 @@ public class DissapearUI : MonoBehaviour
                 }
                 ButtonsActive = true;
             }
+        }*/
+        if (ButtonsActive == true)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                foreach (GameObject obj in uiObjects)
+                {
+                    obj.SetActive(false);
+                }
+                ButtonsActive = false;
+            }
             
         }
-        
-    }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                foreach (GameObject obj in uiObjects)
+                {
+                    obj.SetActive(true);
+                }
+                ButtonsActive = true;
+            }
+        }
 
-    public void StopButton()
-    {
-       
     }
+   
+
 }
