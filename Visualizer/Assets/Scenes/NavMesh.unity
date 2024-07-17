@@ -346,7 +346,7 @@ GameObject:
   - component: {fileID: 904530146}
   - component: {fileID: 904530145}
   - component: {fileID: 904530150}
-  - component: {fileID: 904530149}
+  - component: {fileID: 904530151}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -433,20 +433,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &904530149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 904530144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f38f207113576142abc3c99fd520d25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cam: {fileID: 463514607}
-  agent: {fileID: 904530150}
 --- !u!195 &904530150
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -469,6 +455,20 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &904530151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 904530144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a9a9d0553867d4d98e75e635b40e29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 463514607}
+  agent: {fileID: 904530150}
 --- !u!1 &1060808108
 GameObject:
   m_ObjectHideFlags: 0
