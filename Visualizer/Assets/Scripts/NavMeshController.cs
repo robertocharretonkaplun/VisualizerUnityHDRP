@@ -3,45 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// En esta clase se maneja el movimiento del agente en NavMesh para poder desplazarse en el nivel.
+/// This class handles the movement of the agent in NavMesh to be able to move through the level.
 /// </summary>
 
 public class NavMeshController : MonoBehaviour
 {
     /// <summary>
-    /// La c�mara principal nos ayudar� para obtener la posici�n del clic del usuario.
+    /// The main camera will help us to obtain the position of the user's click.
     /// </summary>
     public Camera cam;
 
     /// <summary>
-    /// NavMesh Agent es el objeto que se mover� hacia la posici�n donde se dio el clic por el usuario.
+    /// NavMesh Agent is the object that will move to the position where the user clicked.
     /// </summary>
     public UnityEngine.AI.NavMeshAgent agent;
 
     /// <summary>
-    /// Este método comprueba si el usuario ha hecho clic y, de ser así, calcula un destino
-    /// para el agente NavMesh basado en la posición del clic en el nivel.
+    /// This method checks whether the user has clicked and, if so, calculates a destination 
+    /// for the NavMesh agent based on the click position in the level.
     /// </summary>
     void Update()
     {
-        // Comprueba si se ha presionado el botón izquierdo del ratón (botón 0)
+        // Checks if the left mouse button (button 0) has been pressed
         if (Input.GetMouseButtonDown(0))
         {
-            // En esta parte toma la posición del ratón en la pantalla y proyecta un rayo desde la cámara
-            //  hacia esa posición en el mundo (El rayo es una línea invisible que se utiliza para detectar
-            //  colisiones con objetos en la escena.)
+            // In this part it takes the position of the mouse on the screen and projects a ray from the camera
+            //  towards that position in the world (The ray is an invisible line used to detect
+            //  collisions with objects in the scene.)
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            // Almacenará información sobre la colisión, si la hay. RaycastHit es una estructura que contiene
-            //  datos sobre el punto de impacto, la distancia desde el origen del rayo y donde el collider.
+            // It will store information about the collision, if any. RaycastHit is a structure that contains
+            //  data about the point of impact, the distance from the origin of the beam and where the collider.
             RaycastHit hit;
-            // Si el rayo colisiona con algún objeto en la escena. La información sobre la colisión se almacena
-            // en la variable hit. El out keyword indica que hit será un parámetro de salida que recibirá el valor
-            // calculado dentro del método.
+            // If the beam collides with any object in the scene. Collision information is stored in the variable hit.
+            // The out keyword indicates that hit will be an output parameter that will receive the value
+            // calculated within the method.
             if (Physics.Raycast(ray, out hit))
             {
-                // Si el rayo colisiona con un objeto, este método establece el destino del NavMeshAgent en el
-                // punto de colisión (hit.point). El agente se moverá automáticamente hacia esa posición utilizando
-                // la navegación proporcionada por el sistema de NavMesh de Unity.
+                // If the ray collides with an object, this method sets the target of the NavMeshAgent 
+                // to the collision point (hit.point). The agent will automatically move to that position
+                // using the navigation provided by Unity's NavMesh system.
                 agent.SetDestination(hit.point);
             }
         }
