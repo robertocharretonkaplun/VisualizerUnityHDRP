@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ShowModeController : MonoBehaviour
 {
+    public CameraWaypointMove CameraWaypointMoveRef;
     /// <summary>
     /// initialize the timescale to one to avoid bugs
     /// </summary>
@@ -43,6 +44,7 @@ public class ShowModeController : MonoBehaviour
     public void Play()
     {
         Time.timeScale = 1.0f;
+        CameraWaypointMoveRef.StartMoving();
     }
 
     /// <summary>
