@@ -7,13 +7,20 @@ using UnityEngine;
 /// </summary>
 public class ShowModeController : MonoBehaviour
 {
-    public CameraWaypointMove CameraWaypointMoveRef;
+    /// <summary>
+    /// I need a ref to CameraWaypoint script to initialize the movement and stop them.
+    /// </summary>
+
+    [Header("Script reference")]
+    public CameraWaypointMove CameraWaypointMoveRef; //Get camera waypoint move script
+
+
     /// <summary>
     /// initialize the timescale to one to avoid bugs
     /// </summary>
     void Start()
     {
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; //Set start timescale normal
     }
 
     // Update is called once per frame
@@ -43,8 +50,8 @@ public class ShowModeController : MonoBehaviour
     /// </summary>
     public void Play()
     {
-        Time.timeScale = 1.0f;
-        CameraWaypointMoveRef.StartMoving();
+        Time.timeScale = 1.0f; //Set timescale normal
+        CameraWaypointMoveRef.StartMoving(); //Get function to starting move from CameraWaypointMoveRef
     }
 
     /// <summary>
@@ -52,7 +59,7 @@ public class ShowModeController : MonoBehaviour
     /// </summary>
     public void Pause()
     {
-        Time.timeScale = 0f;
+        Time.timeScale = 0f; //Set timescale paused
     }
 
     /// <summary>

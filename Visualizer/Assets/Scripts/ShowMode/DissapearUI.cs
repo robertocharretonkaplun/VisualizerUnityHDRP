@@ -16,9 +16,13 @@ public class DissapearUI : MonoBehaviour
     /// Create a array to ui objects to save all gameobjects in layer UI
     /// The boolean is only to show us the state of the buttons
     /// </summary>
-    
-    [SerializeField] private bool ButtonsActive;
+
+    [Header("GameObjects")]
     private GameObject[] uiObjects;
+
+    [Header("Booleans to debug and control")]
+    [SerializeField] private bool ButtonsActive; //Boolean to control when Ui is off and on
+    
 
     /// <summary>
     /// Initialize the boolean true because when we load scene the UI is turn on
@@ -26,10 +30,10 @@ public class DissapearUI : MonoBehaviour
     /// </summary>
     void Start()
     {
-        ButtonsActive = true;
-        int layer = LayerMask.NameToLayer("UI");
-        uiObjects = FindObjectsOfType<GameObject>();
-        uiObjects = System.Array.FindAll(uiObjects, obj => obj.layer == layer);
+        ButtonsActive = true; //Initialize UI On
+        int layer = LayerMask.NameToLayer("UI"); //Get UI Layer
+        uiObjects = FindObjectsOfType<GameObject>(); //Add game objects to array
+        uiObjects = System.Array.FindAll(uiObjects, obj => obj.layer == layer); //Unique game objects with UI Layer
     }
 
     
@@ -38,7 +42,7 @@ public class DissapearUI : MonoBehaviour
     /// </summary>
     void Update()
     {
-        UiOff_On();
+        UiOff_On(); 
     }
 
     /// <summary>
@@ -78,6 +82,7 @@ public class DissapearUI : MonoBehaviour
             {
                 foreach (GameObject obj in uiObjects)
                 {
+                    //UI Desactivate
                     obj.SetActive(false);
                 }
                 ButtonsActive = false;
@@ -90,6 +95,7 @@ public class DissapearUI : MonoBehaviour
             {
                 foreach (GameObject obj in uiObjects)
                 {
+                    //UI Activate
                     obj.SetActive(true);
                 }
                 ButtonsActive = true;
