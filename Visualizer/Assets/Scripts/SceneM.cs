@@ -1,15 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Clase responsable de manejar la carga de escenas en el juego que puede ser llamada de diferentes formas.
+/// </summary>
 public class SceneM : MonoBehaviour
 {
-    // The name of the scene you want to load
+    /// <summary>
+    /// El nombre de la escena que se desea cargar.
+    /// </summary>
     public string gameSceneName = "GameScene";
-
-    // Function to be called when the Play button is clicked
+    /// <summary>
+    /// Función que se llama cuando se hace clic en el botón de Jugar.
+    /// </summary>
     public void OnPlayButtonClick()
     {
-        // Load the specified scene
+        // Cargar la escena especificada
         SceneManager.LoadScene(gameSceneName);
     }
 }
