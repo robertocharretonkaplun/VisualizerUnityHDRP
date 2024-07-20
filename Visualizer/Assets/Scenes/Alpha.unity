@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1181.36, g: 1828.3298, b: 3292.1243, a: 1}
+  m_IndirectSpecularColor: {r: 1181.36, g: 1828.3298, b: 3292.14, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b0f2496bec6217a49b1ed85463cd17a0, type: 2}
+  objectToDeactivate: {fileID: 0}
 --- !u!114 &1262452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7073,6 +7074,18 @@ MonoBehaviour:
       - m_Target: {fileID: 1262451}
         m_TargetAssemblyTypeName: SaveSystem, Assembly-CSharp
         m_MethodName: Save
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1262451}
+        m_TargetAssemblyTypeName: SaveSystem, Assembly-CSharp
+        m_MethodName: DeselectAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
