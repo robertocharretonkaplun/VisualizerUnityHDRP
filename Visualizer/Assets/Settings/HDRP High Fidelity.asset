@@ -15,8 +15,8 @@ MonoBehaviour:
   m_RenderPipelineSettings:
     supportShadowMask: 0
     supportSSR: 1
-    supportSSRTransparent: 0
-    supportSSAO: 1
+    supportSSRTransparent: 1
+    supportSSAO: 0
     supportSSGI: 1
     supportSubsurfaceScattering: 1
     sssSampleBudget:
@@ -50,7 +50,7 @@ MonoBehaviour:
     supportProbeVolume: 0
     probeVolumeMemoryBudget: 1024
     probeVolumeSHBands: 1
-    supportRayTracing: 0
+    supportRayTracing: 1
     supportedRayTracingMode: 3
     lightLoopSettings:
       cookieAtlasSize: 512
@@ -105,7 +105,7 @@ MonoBehaviour:
       maxDirectionalShadowMapResolution: 6000
       maxPunctualShadowMapResolution: 4096
       maxAreaShadowMapResolution: 5000
-      supportScreenSpaceShadows: 0
+      supportScreenSpaceShadows: 1
       maxScreenSpaceShadowSlots: 5
       screenSpaceShadowBufferFormat: 48
     decalSettings:

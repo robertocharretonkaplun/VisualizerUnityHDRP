@@ -4,12 +4,34 @@ using UnityEngine;
 
 public class LevelEditor_Manager : MonoBehaviour
 {
+    // Singleton instance
+    public static LevelEditor_Manager Instance { get; private set; }
+
+    // Public variables
     public ItemController[] ItemButtons;
     public GameObject[] ItemPrefabs;
     public int CurrentButtonPressed;
     public float PlaneHeight = 0f; // altura del plano donde se colocan los objetos
+    
+    // Private variables
     [SerializeField] private CommandManager commandManager;
 
+    // Awake is called when the script instance is being loaded
+    private void Awake()
+    {
+        // Implementing the singleton pattern
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Update is called once per frame
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && ItemButtons[CurrentButtonPressed].Clicked)
