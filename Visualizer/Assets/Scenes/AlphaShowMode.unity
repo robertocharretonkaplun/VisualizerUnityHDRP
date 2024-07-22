@@ -953,8 +953,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints: []
+  currentWaypointIndex: 0
   moveSpeed: 5
   waitTime: 1
+  isMoving: 0
+  shouldMove: 0
 --- !u!1 &33653822
 GameObject:
   m_ObjectHideFlags: 0
@@ -4634,9 +4637,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waypointPrefab: {fileID: 7738098908861280858, guid: e6040a8b358d3734ab8c653b9e56aa83,
     type: 3}
+  CameraWaypointMoveRef: {fileID: 31057822}
   waypointPositions: []
   CreateWaypointActivate: 0
-  CameraWaypointMoveRef: {fileID: 31057822}
 --- !u!1 &577826467
 GameObject:
   m_ObjectHideFlags: 0

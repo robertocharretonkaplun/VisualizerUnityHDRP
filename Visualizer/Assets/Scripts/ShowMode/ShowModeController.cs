@@ -67,6 +67,6 @@ public class ShowModeController : MonoBehaviour
     /// </summary>
     public void StopButton()
     {
-
+        CameraWaypointMoveRef.StopMoving();
     }
 }
