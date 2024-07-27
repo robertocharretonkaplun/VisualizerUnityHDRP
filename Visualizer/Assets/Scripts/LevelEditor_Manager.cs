@@ -4,12 +4,34 @@ using UnityEngine;
 
 public class LevelEditor_Manager : MonoBehaviour
 {
+    // Singleton instance
+    public static LevelEditor_Manager Instance { get; private set; }
+
+    // Public variables
     public ItemController[] ItemButtons;
     public GameObject[] ItemPrefabs;
     public int CurrentButtonPressed;
     public float PlaneHeight = 0f; // altura del plano donde se colocan los objetos
+    
+    // Private variables
     [SerializeField] private CommandManager commandManager;
 
+    // Awake is called when the script instance is being loaded
+    private void Awake()
+    {
+        // Implementing the singleton pattern
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // Update is called once per frame
     private void Update()
     {
         if (Input.GetMouseButtonDown(0) && ItemButtons[CurrentButtonPressed].Clicked)
@@ -27,9 +49,15 @@ public class LevelEditor_Manager : MonoBehaviour
                 // Calcular la posicion donde se va a instanciar el objeto
                 Vector3 spawnPosition = ray.GetPoint(distance);
 
-                // Crear el comando y ejecutarlo a través del CommandManager
+                // Obtener el prefab y su rotación
                 var itemPrefab = ItemPrefabs[CurrentButtonPressed];
-                var placeItemCommand = new PlaceItemCommand(itemPrefab, spawnPosition, Quaternion.identity);
+                Quaternion spawnRotation = itemPrefab.transform.rotation;
+
+                // Ajustar la posición en Y del objeto basado en el prefab
+                spawnPosition.y = itemPrefab.transform.position.y;
+
+                // Crear el comando y ejecutarlo a través del CommandManager
+                var placeItemCommand = new PlaceItemCommand(itemPrefab, spawnPosition, spawnRotation);
                 commandManager.ExecuteCommand(placeItemCommand);
             }
         }
