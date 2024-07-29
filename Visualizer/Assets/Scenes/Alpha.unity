@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.49151504, g: 0.7597329, b: 1.365056, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b0f2496bec6217a49b1ed85463cd17a0, type: 2}
+  objectToDeactivate: {fileID: 0}
 --- !u!114 &1262452
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1128,9 +1129,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 586, y: 429}
-  m_SizeDelta: {x: 219.5031, y: 55.8646}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 572, y: 384}
+  m_SizeDelta: {x: 138.6839, y: 55.865}
+  m_Pivot: {x: 0.1719645, y: 0.68792474}
 --- !u!114 &257049668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1261,7 +1262,7 @@ GameObject:
   - component: {fileID: 283427277}
   - component: {fileID: 283427276}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: AccessBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1285,8 +1286,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -513}
-  m_SizeDelta: {x: 0, y: -1021.7145}
+  m_AnchoredPosition: {x: 0, y: -511.93}
+  m_SizeDelta: {x: 0, y: -1023.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &283427276
 MonoBehaviour:
@@ -1308,7 +1309,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2400,7 +2401,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3391,7 +3392,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3861,8 +3862,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -727, y: 161}
-  m_SizeDelta: {x: 154.9669, y: 35.213}
+  m_AnchoredPosition: {x: -727, y: 161.44202}
+  m_SizeDelta: {x: 154.9669, y: 34.3289}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &798337379
 MonoBehaviour:
@@ -4702,8 +4703,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 202, y: 221}
-  m_SizeDelta: {x: 219.5031, y: 55.8646}
+  m_AnchoredPosition: {x: 202, y: 247}
+  m_SizeDelta: {x: 142.0879, y: 55.8646}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &940318241
 MonoBehaviour:
@@ -7261,8 +7262,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -882.2, y: 161}
-  m_SizeDelta: {x: 154.9669, y: 35.213}
+  m_AnchoredPosition: {x: -882.2, y: 161.44}
+  m_SizeDelta: {x: 154.9669, y: 34.329}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1363073905
 MonoBehaviour:
@@ -9214,7 +9215,7 @@ GameObject:
   - component: {fileID: 1790929561}
   - component: {fileID: 1790929560}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: AcccessBar_ContentBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9238,7 +9239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -851, y: -0}
+  m_AnchoredPosition: {x: -843.51, y: -0}
   m_SizeDelta: {x: 219.5031, y: 55.8646}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1790929560
