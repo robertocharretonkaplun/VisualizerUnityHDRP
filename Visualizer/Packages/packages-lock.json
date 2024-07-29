@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.ichomo.daynightrlsync": {
+      "version": "https://github.com/IChoMo/com.ichomo.daynightrlsync.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "209d68b8e0599c69f04d5bd560fd53d36212eee3"
+    },
     "com.unity.burst": {
       "version": "1.8.2",
       "depth": 1,

@@ -5,16 +5,17 @@ using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
 using UnityEngine.UI;
-using SFB;
-using UnityEngine.Networking;
-using Dummiesman;
+using SFB; //Libreria para Standalone file browser
+using UnityEngine.Networking; // Proporciona clases y métodos para realizar solicitudes web y manejar la red (Descargar archivos o interactuar con servicios web)
+using Dummiesman;//Libreria para cargar modelos OBJ 
 
 public class OpenFile : MonoBehaviour
 {
-    public Material defaultMaterial;
-    private Display display;
-    private SaveSystem saveSystem;
+    public Material defaultMaterial;    //Material que le asignamos por defecto a los modelos cargados
+    private Display display;    //Referencia al componente display
+    private SaveSystem saveSystem;  //Referencia al componente componente SaveSystem
 
+    // Metodo Start
     private void Start()
     {
         display = gameObject.GetComponent<Display>(); // Obtener referencia al componente Display adjunto al mismo GameObject
@@ -45,6 +46,7 @@ public class OpenFile : MonoBehaviour
     }
 #endif
 
+    // Corrutina para procesar el archivo abierto
     private IEnumerator OutputRoutineOpen(string url)
     {
         UnityWebRequest www = UnityWebRequest.Get(url); // Crea una solicitud para obtener el archivo desde la URL
@@ -87,8 +89,8 @@ public class OpenFile : MonoBehaviour
     // Método para combinar las mallas de un modelo en una sola
     private void CombineMeshes(GameObject model)
     {
-        MeshFilter[] meshFilters = model.GetComponentsInChildren<MeshFilter>();
-        CombineInstance[] combine = new CombineInstance[meshFilters.Length];
+        MeshFilter[] meshFilters = model.GetComponentsInChildren<MeshFilter>();     // Obtiene todos los MeshFilters en los hijos del modelo
+        CombineInstance[] combine = new CombineInstance[meshFilters.Length];        // Arreglo de instancias combinadas
 
         for (int i = 0; i < meshFilters.Length; i++)
         {

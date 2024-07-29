@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Alpha.unity
     guid: 01e83b672d9a75a479569abf522e559d
   - enabled: 1
-    path: Assets/Scenes/Credits.unity
-    guid: 3e510c31741c75141aaf7a931d85074d
+    path: Assets/Scenes/AlphaShowMode.unity
+    guid: 5b4cb53d767e3cd458c7f040663b0251
   m_configObjects: {}
