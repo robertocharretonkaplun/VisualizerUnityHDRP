@@ -6,7 +6,7 @@ TagManager:
   tags:
   - LevelEditor_Manager
   - Selectable
-  - ExcludeFromSave
+  - DeactivatableObject
   layers:
   - Default
   - TransparentFX
