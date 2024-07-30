@@ -60,7 +60,15 @@ public class SaveSystem : MonoBehaviour
     private List<string> materialPaths = new List<string>();    // Lista de rutas de materiales
     private GameObject currentModel;                            // Modelo actual
     private SelectTransformGizmo selectTransformGizmo;          // Variable para el script SelectTransformGizmo
-    //Mediante programacion asignamos la referencia a SelectTransformGizmo
+    /// <summary>
+    /// Inicializa las referencias a componentes y objetos necesarios al iniciar el script.
+    /// </summary>
+    /// <remarks>
+    /// - Encuentra y asigna el componente <see cref="SelectTransformGizmo"/> mediante programacion automáticamente.
+    /// - Si no se encuentra el componente, se registra un error en la consola.
+    /// - Encuentra y asigna el objeto con la etiqueta 'DeactivatableObject' para su posterior desactivación.
+    /// - Si no se encuentra el objeto, se registra una advertencia en la consola.
+    /// </remarks>
     private void Start()
     {
         // Encuentra y asigna el SelectTransformGizmo automáticamente
