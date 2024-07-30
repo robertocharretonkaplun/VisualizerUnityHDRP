@@ -59,8 +59,8 @@ public class SaveSystem : MonoBehaviour
     private List<string> modelPaths = new List<string>();       //Lista de rutas de modelos
     private List<string> materialPaths = new List<string>();    // Lista de rutas de materiales
     private GameObject currentModel;                            // Modelo actual
-    private SelectTransformGizmo selectTransformGizmo; // Variable para el script SelectTransformGizmo
-
+    private SelectTransformGizmo selectTransformGizmo;          // Variable para el script SelectTransformGizmo
+    //Mediante programacion asignamos la referencia a SelectTransformGizmo
     private void Start()
     {
         // Encuentra y asigna el SelectTransformGizmo automáticamente
@@ -195,6 +195,8 @@ public class SaveSystem : MonoBehaviour
     /// Carga los datos de la escena desde un archivo JSON. Este método permite al usuario seleccionar un archivo JSON a través de un panel de apertura de archivos.
     /// Una vez seleccionado el archivo, el método lee el contenido del archivo, lo deserializa en un objeto <see cref="ModelList"/> y luego inicia una coroutine
     /// para procesar y cargar los modelos en la escena.
+    /// Ademas en el Start de Save system obtiene la referencia de SelectTransformGizmo y en Load llamamos al metodo GetRuntimeTransformGameObject para obtenber 
+    /// runtimeTransformGameObj
     /// </summary>
     /// <remarks>
     /// El método usa el "StandaloneFileBrowser" para mostrar un panel que permite al usuario seleccionar un archivo JSON.
@@ -225,7 +227,7 @@ public class SaveSystem : MonoBehaviour
                 if (runtimeTransformGameObj != null) 
                 {
                     runtimeTransformGameObj.tag = "DeactivatableObject"; // Asigna la etiqueta "DeactivatableObject"
-                    runtimeTransformGameObj.SetActive(false); // Desactiva el GameObject dinámico
+                    runtimeTransformGameObj.SetActive(false);            // Desactiva el GameObject dinámico
                                                               
                 }
                 else
