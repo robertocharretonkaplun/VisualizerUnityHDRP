@@ -4629,7 +4629,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectionMaterial: {fileID: 2100000, guid: fae19271202dc6f44a39e0ec19b3750b, type: 2}
   runtimeHierarchy: {fileID: 1012258769}
-  sceneCamera: {fileID: 0}
+  sceneCamera: {fileID: 535164224}
 --- !u!4 &732847828
 Transform:
   m_ObjectHideFlags: 0
