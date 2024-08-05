@@ -24,7 +24,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Shader Graphs_Selection
-  m_Shader: {fileID: -6465566751694194690, guid: 2837fa3e3770fc04ab0e9e17debe7996, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 2837fa3e3770fc04ab0e9e17debe7996,
+    type: 3}
   m_ValidKeywords:
   - _ENABLE_FOG_ON_TRANSPARENT
   - _SURFACE_TYPE_TRANSPARENT
@@ -103,7 +104,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 43.67059, g: 0, b: 62.7451, a: 0}
+    - _Color: {r: 4.1725492, g: 0, b: 5.992157, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +9,7 @@ public class SelectTransformGizmo : MonoBehaviour
 {
     public Material selectionMaterial;
     public RuntimeHierarchy runtimeHierarchy; // Reference to the RuntimeHierarchy
+    public CameraM sceneCamera; // Reference to the camera script
 
     private Dictionary<Transform, Material[]> originalMaterialsSelection = new Dictionary<Transform, Material[]>();
     private Transform selection;
@@ -19,6 +19,7 @@ public class SelectTransformGizmo : MonoBehaviour
     private RuntimeTransformHandle runtimeTransformHandle;
     private int runtimeTransformLayer = 6;
     private int runtimeTransformLayerMask;
+    private bool focusOnSelectionRequested;
 
     public event Action<Transform> OnSelectionChanged;
 
@@ -27,28 +28,41 @@ public class SelectTransformGizmo : MonoBehaviour
         runtimeTransformGameObj = new GameObject();
         runtimeTransformHandle = runtimeTransformGameObj.AddComponent<RuntimeTransformHandle>();
         runtimeTransformGameObj.layer = runtimeTransformLayer;
-        runtimeTransformLayerMask = 1 << runtimeTransformLayer; //Layer number represented by a single bit in the 32-bit integer using bit shift
+        runtimeTransformLayerMask = 1 << runtimeTransformLayer; // Layer number represented by a single bit in the 32-bit integer using bit shift
         runtimeTransformHandle.type = HandleType.POSITION;
         runtimeTransformHandle.autoScale = true;
         runtimeTransformHandle.autoScaleFactor = 1.0f;
         runtimeTransformGameObj.SetActive(false);
-
         runtimeTransformGameObj.tag = "DeactivatableObject"; // Asigna la etiqueta 'DeactivatableObject' al GameObject creado paara que despues pueda ser desactivado
-
         OnSelectionChanged += HandleSelectionChanged; // Subscribe to the event
+
+        // Subscribe to the RuntimeHierarchy selection event if available
+        if (runtimeHierarchy != null)
+        {
+            // Assuming there's a method to subscribe to selection changes
+            //runtimeHierarchy.OnSelectionChanged += HandleHierarchySelectionChanged;
+        }
     }
 
     private void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        // Selection and focus
+        if (Input.GetKeyDown(KeyCode.F) && focusOnSelectionRequested)
+        {
+            if (sceneCamera != null && selection != null)
+            {
+                sceneCamera.SetTargetObject(selection); // Update camera's target object
+            }
+            focusOnSelectionRequested = false; // Reset the flag
+        }
 
         // Selection
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
             ApplyLayerToChildren(runtimeTransformGameObj);
-            if (Physics.Raycast(ray, out raycastHit))
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out raycastHit))
             {
-                if (Physics.Raycast(ray, out raycastHitHandle, Mathf.Infinity, runtimeTransformLayerMask)) //Raycast towards runtime transform handle only
+                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out raycastHitHandle, Mathf.Infinity, runtimeTransformLayerMask)) // Raycast towards runtime transform handle only
                 {
                     // Do nothing if hit the runtime transform handle
                 }
@@ -56,30 +70,31 @@ public class SelectTransformGizmo : MonoBehaviour
                 {
                     if (selection != null)
                     {
-                        SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
+                        SetMaterials(selection, originalMaterialsSelection, true); // Restore the original material
                     }
                     selection = raycastHit.transform;
                     MeshRenderer[] selectionRenderers = GetMeshRenderers(selection);
                     foreach (MeshRenderer renderer in selectionRenderers)
                     {
-                        if (!ArrayContainsMaterial(renderer.materials, selectionMaterial)) //Add the selection material
+                        if (!ArrayContainsMaterial(renderer.materials, selectionMaterial)) // Add the selection material
                         {
-                            originalMaterialsSelection[renderer.transform] = renderer.materials; //Save the original material
-                            Material[] newMaterials = new Material[renderer.materials.Length + 1]; //Create a new material array
-                            renderer.materials.CopyTo(newMaterials, 0); //Copy the original materials to the new array
-                            newMaterials[newMaterials.Length - 1] = selectionMaterial; //Add the selection material to the new array
-                            renderer.materials = newMaterials; //Assign the new material array to the selected object
+                            originalMaterialsSelection[renderer.transform] = renderer.materials; // Save the original material
+                            Material[] newMaterials = new Material[renderer.materials.Length + 1]; // Create a new material array
+                            renderer.materials.CopyTo(newMaterials, 0); // Copy the original materials to the new array
+                            newMaterials[newMaterials.Length - 1] = selectionMaterial; // Add the selection material to the new array
+                            renderer.materials = newMaterials; // Assign the new material array to the selected object
                         }
                     }
-                    runtimeTransformHandle.target = selection; //Assign the selected object to the runtime transform handle
-                    runtimeTransformGameObj.SetActive(true); //Activate the runtime transform handle
+                    runtimeTransformHandle.target = selection; // Assign the selected object to the runtime transform handle
+                    runtimeTransformGameObj.SetActive(true); // Activate the runtime transform handle
                     OnSelectionChanged?.Invoke(selection); // Notify selection change
+                    focusOnSelectionRequested = true; // Set flag to request focus
                 }
                 else
                 {
                     if (selection)
                     {
-                        SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
+                        SetMaterials(selection, originalMaterialsSelection, true); // Restore the original material
                         selection = null;
                         runtimeTransformGameObj.SetActive(false);
                         OnSelectionChanged?.Invoke(null); // Notify selection change
@@ -90,9 +105,9 @@ public class SelectTransformGizmo : MonoBehaviour
             {
                 if (selection)
                 {
-                    SetMaterials(selection, originalMaterialsSelection, true); //Restore the original material
+                    SetMaterials(selection, originalMaterialsSelection, true); // Restore the original material
                     selection = null;
-                    runtimeTransformGameObj.SetActive(false); //Deactivate the runtime transform handle
+                    runtimeTransformGameObj.SetActive(false); // Deactivate the runtime transform handle
                     OnSelectionChanged?.Invoke(null); // Notify selection change
                 }
             }
@@ -136,9 +151,21 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
 
-    public Transform GetCurrentSelection()
+    private void HandleSelectionChanged(Transform newSelection)
     {
-        return selection;
+        if (runtimeHierarchy != null)
+        {
+            runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Update RuntimeHierarchy selection
+        }
+        if (sceneCamera != null)
+        {
+            focusOnSelectionRequested = true; // Set flag to request focus on the next F key press
+        }
+    }
+
+    private void HandleHierarchySelectionChanged(Transform newSelection)
+    {
+        HandleSelectionChanged(newSelection); // Handle hierarchy selection change
     }
 
     private void ApplyLayerToChildren(GameObject parentGameObj)
@@ -166,7 +193,7 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
 
-    private bool ArrayContainsMaterial(Material[] materials, Material material) //Check if a material already exists in an array of materials
+    private bool ArrayContainsMaterial(Material[] materials, Material material) // Check if a material already exists in an array of materials
     {
         foreach (var mat in materials)
         {
@@ -176,14 +203,6 @@ public class SelectTransformGizmo : MonoBehaviour
             }
         }
         return false;
-    }
-
-    private void HandleSelectionChanged(Transform newSelection)
-    {
-        if (runtimeHierarchy != null)
-        {
-            runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Update RuntimeHierarchy selection
-        }
     }
 
     private MeshRenderer[] GetMeshRenderers(Transform transform)
@@ -207,10 +226,9 @@ public class SelectTransformGizmo : MonoBehaviour
             }
         }
     }
-    
+
     public GameObject GetRuntimeTransformGameObject()
     {
-        return runtimeTransformGameObj; // Devuelve el GameObject dinámico runtimeTransformGameObj que tiene asignado un RuntimeTransformHandle proporcionando funcionalidades para manipular transfromaciones del Obj seleccionado
+        return runtimeTransformGameObj; // Devuelve el GameObject dinÃ¡mico runtimeTransformGameObj que tiene asignado un RuntimeTransformHandle proporcionando funcionalidades para manipular transfromaciones del Obj seleccionado
     }
 }
-

@@ -1,31 +1,34 @@
 using UnityEngine;
-
+/// <summary>
+/// Script de la cámara que controla el movimiento, rotación y zoom de la cámara.
+/// </summary>
 public class CameraM : MonoBehaviour
 {
-    public float moveSpeed = 10f; // Velocidad de movimiento
-    public float rotationSpeed = 100f; // Velocidad de rotación
-    public float zoomSpeed = 10f; // Velocidad de zoom
-    public float panSpeed = 10f; // Velocidad de paneo
-    public float shiftMultiplier = 2f; // Multiplicador de velocidad al mantener Shift
-    private Vector3 lastMousePosition; // Última posición del mouse
+    public float moveSpeed = 10f; // Movement speed
+    public float rotationSpeed = 100f; // Rotation speed
+    public float zoomSpeed = 10f; // Zoom speed
+    public float panSpeed = 10f; // Panning speed
+    public float shiftMultiplier = 2f; // Speed multiplier when holding Shift
+    private Vector3 lastMousePosition; // Last mouse position
+    public float focusDistance = 5f; // Distance from the object when focusing
 
-    void Update()
+    private void Update()
     {
-        // Cambio de velocidad al mantener Shift
+        // Change speed when holding Shift
         float currentMoveSpeed = moveSpeed;
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             currentMoveSpeed *= shiftMultiplier;
         }
 
-        // Traslacion de la cámara (Movement)
+        // Camera movement
         if (Input.GetMouseButton(1))
         {
             float moveX = Input.GetAxis("Horizontal") * currentMoveSpeed * Time.deltaTime;
             float moveZ = Input.GetAxis("Vertical") * currentMoveSpeed * Time.deltaTime;
             float moveY = 0f;
 
-            // Movimiento vertical y horizontal 
+            // Vertical movement
             if (Input.GetKey(KeyCode.Q))
             {
                 moveY = -currentMoveSpeed * Time.deltaTime;
@@ -38,7 +41,7 @@ public class CameraM : MonoBehaviour
             transform.Translate(new Vector3(moveX, moveY, moveZ));
         }
 
-        // Rotación de la cámara (Rotation)
+        // Camera rotation
         if (Input.GetMouseButton(1))
         {
             float rotationX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
@@ -47,11 +50,11 @@ public class CameraM : MonoBehaviour
             transform.Rotate(Vector3.right, -rotationY, Space.Self);
         }
 
-        // Zoom de la cámara (Zoom)
+        // Camera zoom
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         transform.Translate(Vector3.forward * scroll * zoomSpeed, Space.Self);
 
-        // Paneo de la cámara (Panning)
+        // Camera panning
         if (Input.GetMouseButton(2))
         {
             Vector3 delta = Input.mousePosition - lastMousePosition;
@@ -60,5 +63,17 @@ public class CameraM : MonoBehaviour
         }
 
         lastMousePosition = Input.mousePosition;
+    }
+    // Se enfoca en un objeto y se mueve a una distancia determinada
+    public void FocusOnObject(Transform target)
+    {
+        Vector3 focusPoint = target.position - target.forward * focusDistance;
+        transform.position = focusPoint; // Immediately move to the focus point
+        transform.LookAt(target); // Immediately rotate to face the target
+    }
+
+    public void SetTargetObject(Transform target)
+    {
+        FocusOnObject(target); // Call the focus method
     }
 }
