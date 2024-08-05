@@ -59,6 +59,32 @@ public class SaveSystem : MonoBehaviour
     private List<string> modelPaths = new List<string>();       //Lista de rutas de modelos
     private List<string> materialPaths = new List<string>();    // Lista de rutas de materiales
     private GameObject currentModel;                            // Modelo actual
+    private SelectTransformGizmo selectTransformGizmo;          // Variable para el script SelectTransformGizmo
+    /// <summary>
+    /// Inicializa las referencias a componentes y objetos necesarios al iniciar el script.
+    /// </summary>
+    /// <remarks>
+    /// - Encuentra y asigna el componente <see cref="SelectTransformGizmo"/> mediante programacion automáticamente.
+    /// - Si no se encuentra el componente, se registra un error en la consola.
+    /// - Encuentra y asigna el objeto con la etiqueta 'DeactivatableObject' para su posterior desactivación.
+    /// - Si no se encuentra el objeto, se registra una advertencia en la consola.
+    /// </remarks>
+    private void Start()
+    {
+        // Encuentra y asigna el SelectTransformGizmo automáticamente
+        selectTransformGizmo = FindObjectOfType<SelectTransformGizmo>();
+        if (selectTransformGizmo == null)
+        {
+            Debug.LogError("No se encontró el componente SelectTransformGizmo en la escena.");
+        }
+
+        // Encuentra y asigna el objeto para desactivar automáticamente con el tag DeactivatableObject
+        objectToDeactivate = GameObject.FindGameObjectWithTag("DeactivatableObject");
+        if (objectToDeactivate == null)
+        {
+            Debug.LogWarning("No se encontró un GameObject con la etiqueta 'DeactivatableObject'.");
+        }
+    }
 
     // -------------------------------
     // Métodos
@@ -177,6 +203,8 @@ public class SaveSystem : MonoBehaviour
     /// Carga los datos de la escena desde un archivo JSON. Este método permite al usuario seleccionar un archivo JSON a través de un panel de apertura de archivos.
     /// Una vez seleccionado el archivo, el método lee el contenido del archivo, lo deserializa en un objeto <see cref="ModelList"/> y luego inicia una coroutine
     /// para procesar y cargar los modelos en la escena.
+    /// Ademas en el Start de Save system obtiene la referencia de SelectTransformGizmo y en Load llamamos al metodo GetRuntimeTransformGameObject para obtenber 
+    /// runtimeTransformGameObj
     /// </summary>
     /// <remarks>
     /// El método usa el "StandaloneFileBrowser" para mostrar un panel que permite al usuario seleccionar un archivo JSON.
@@ -189,11 +217,36 @@ public class SaveSystem : MonoBehaviour
         string[] paths = StandaloneFileBrowser.OpenFilePanel("Abrir archivo", "", "json", false);
         if (paths.Length > 0)
         {
-            string path = paths[0];
+            string path = paths[0];                 // Obtiene la ruta del primer archivo seleccionado
             string json = File.ReadAllText(path);   // Lee el archivo JSON
 
-            ModelList modelList = JsonUtility.FromJson<ModelList>(json);    // Deserializa el JSON
-            StartCoroutine(LoadModelsCoroutine(modelList));                 // Inicia la corrutina para cargar los modelos
+            ModelList modelList = JsonUtility.FromJson<ModelList>(json);    // Deserializa el JSON en un Obj de tipo Model List
+            StartCoroutine(LoadModelsCoroutine(modelList));                 // Inicia la corrutina para cargar los modelos delo Model List
+
+
+            // Recrear/configura el GameObject dinámico y establecer sus propiedades
+
+            // Verifica si selectTransformGizmo es nulo
+            if (selectTransformGizmo != null)
+            {
+                // Obtiene el GameObject dinámico manejado por el SelectTransformGizmo
+                GameObject runtimeTransformGameObj = selectTransformGizmo.GetRuntimeTransformGameObject();
+                // Verifica si se obtuvo el GameObject dinámico
+                if (runtimeTransformGameObj != null) 
+                {
+                    runtimeTransformGameObj.tag = "DeactivatableObject"; // Asigna la etiqueta "DeactivatableObject"
+                    runtimeTransformGameObj.SetActive(false);            // Desactiva el GameObject dinámico
+                                                              
+                }
+                else
+                {
+                    Debug.LogError("No se pudo obtener el GameObject dinámico.");  // Muestra un mensaje de error si no se pudo obtener el GameObject dinámico
+                }
+            }
+            else
+            {
+                Debug.LogError("SelectTransformGizmo no está asignado."); // Muestra un mensaje de error si selectTransformGizmo no está asignado
+            }
         }
     }
     // -------------------------------
