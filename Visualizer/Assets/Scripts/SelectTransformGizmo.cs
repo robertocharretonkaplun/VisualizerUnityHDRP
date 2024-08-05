@@ -33,6 +33,8 @@ public class SelectTransformGizmo : MonoBehaviour
         runtimeTransformHandle.autoScaleFactor = 1.0f;
         runtimeTransformGameObj.SetActive(false);
 
+        runtimeTransformGameObj.tag = "DeactivatableObject"; // Asigna la etiqueta 'DeactivatableObject' al GameObject creado paara que despues pueda ser desactivado
+
         OnSelectionChanged += HandleSelectionChanged; // Subscribe to the event
     }
 
@@ -204,6 +206,11 @@ public class SelectTransformGizmo : MonoBehaviour
                 }
             }
         }
+    }
+    
+    public GameObject GetRuntimeTransformGameObject()
+    {
+        return runtimeTransformGameObj; // Devuelve el GameObject dinámico runtimeTransformGameObj que tiene asignado un RuntimeTransformHandle proporcionando funcionalidades para manipular transfromaciones del Obj seleccionado
     }
 }
 

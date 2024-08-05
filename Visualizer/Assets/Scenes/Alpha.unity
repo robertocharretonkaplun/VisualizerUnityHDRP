@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: b0f2496bec6217a49b1ed85463cd17a0, type: 2}
+  objectToDeactivate: {fileID: 0}
 --- !u!114 &1262452
 MonoBehaviour:
   m_ObjectHideFlags: 0
