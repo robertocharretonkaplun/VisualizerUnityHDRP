@@ -7,6 +7,14 @@
       "dependencies": {},
       "hash": "209d68b8e0599c69f04d5bd560fd53d36212eee3"
     },
+    "com.nvidia.omniverse.connector": {
+      "version": "file:C:/Users/jhony/AppData/Local/ov/pkg/unity-connector-202.0.1/com.nvidia.omniverse.connector",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.editorcoroutines": "1.0.0"
+      }
+    },
     "com.unity.burst": {
       "version": "1.8.2",
       "depth": 1,

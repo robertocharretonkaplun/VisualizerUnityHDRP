@@ -71,14 +71,37 @@ public class MaterialDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandle
         RaycastHit hit;
         Ray ray = mainCamera.ScreenPointToRay(eventData.position);
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit) && materialToApply != null)
         {
-            Renderer targetRenderer = hit.transform.GetComponent<Renderer>();
-            if (targetRenderer != null && materialToApply != null)
-            {
-                // Cambia el material del objeto sobre el cual se soltó
-                targetRenderer.material = materialToApply;
-            }
+            ApplyMaterialToHierarchy(hit.transform, materialToApply);
+        }
+    }
+
+    /// <summary>
+    /// Aplica el material a todos los Renderers en la jerarquía del objeto transform,
+    /// excepto si el objeto tiene el tag "Floor".
+    /// </summary>
+    /// <param name="parent">Transform del objeto padre.</param>
+    /// <param name="material">Material a aplicar.</param>
+    private void ApplyMaterialToHierarchy(Transform parent, Material material)
+    {
+        // Verifica si el objeto tiene el tag "Floor" antes de aplicar el material
+        if (parent.CompareTag("Floor"))
+        {
+            return; // No aplica el material si el objeto tiene el tag "Floor"
+        }
+
+        // Aplica el material al Renderer del objeto actual si existe
+        Renderer parentRenderer = parent.GetComponent<Renderer>();
+        if (parentRenderer != null)
+        {
+            parentRenderer.material = material;
+        }
+
+        // Recorre todos los hijos y aplica el material
+        foreach (Transform child in parent)
+        {
+            ApplyMaterialToHierarchy(child, material);
         }
     }
 }

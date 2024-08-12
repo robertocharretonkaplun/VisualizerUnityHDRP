@@ -73,4 +73,29 @@ public class LevelEditor_Manager : MonoBehaviour
             commandManager.RedoCommand();
         }
     }
+
+    /// <summary>
+    /// Spawnea un objeto en la posición dada basado en su itemID.
+    /// </summary>
+    /// <param name="itemID">El ID del item a spawnear.</param>
+    /// <param name="worldPosition">La posición en el mundo donde spawnear el objeto.</param>
+    public void SpawnItemAtPosition(int itemID, Vector3 worldPosition)
+    {
+        if (itemID < 0 || itemID >= ItemPrefabs.Length)
+        {
+            Debug.LogWarning("ID de item inválido: " + itemID);
+            return;
+        }
+
+        // Obtener el prefab y su rotación
+        var itemPrefab = ItemPrefabs[itemID];
+        Quaternion spawnRotation = itemPrefab.transform.rotation;
+
+        // Ajustar la posición en Y del objeto basado en el prefab
+        worldPosition.y = itemPrefab.transform.position.y;
+
+        // Crear el comando y ejecutarlo a través del CommandManager
+        var placeItemCommand = new PlaceItemCommand(itemPrefab, worldPosition, spawnRotation);
+        commandManager.ExecuteCommand(placeItemCommand);
+    }
 }
