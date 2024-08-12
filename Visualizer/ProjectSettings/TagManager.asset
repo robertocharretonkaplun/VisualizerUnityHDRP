@@ -7,6 +7,7 @@ TagManager:
   - LevelEditor_Manager
   - Selectable
   - DeactivatableObject
+  - Floor
   layers:
   - Default
   - TransparentFX
