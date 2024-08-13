@@ -40,10 +40,14 @@ public class ObjectInstantiationTests
 
         //Simulate click on screen
         yield return SimulateClickOnScreen();
+        Debug.Log("Se simulo el click");
 
         //Verify the object has instance
         instantiatedObject = GameObject.Find(levelEditorManager.ItemPrefabs[0].name + "(Clon)");
+        Debug.Log("Objeto instanciado");
         Assert.IsNotNull(instantiatedObject, "El objeto no se ha instanciado correctamente.");
+        
+
 
         //Verify position from instanced object
         Assert.IsTrue(instantiatedObject.transform.position != Vector3.zero, "La posición del objeto instanciado no es la correcta.");
