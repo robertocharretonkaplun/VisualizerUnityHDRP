@@ -19,7 +19,7 @@ public class Waypoints : MonoBehaviour
     public Transform[] waypointPositions; // Array to waypoints transform
 
     [Header("Booleans to debug and control")]
-    [SerializeField] private bool CreateWaypointActivate; // Boolean to show and control when activate createwaypoint mode
+    [SerializeField] public bool CreateWaypointActivate; // Boolean to show and control when activate createwaypoint mode
 
 
     void Start()

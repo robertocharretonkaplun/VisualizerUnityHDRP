@@ -5,7 +5,7 @@ using NUnit.Framework;
 using System.Collections;
 
 //Class to verify correct change between scenes with a click on button
-public class MenuSceneTests
+public class Charge_Scene_Test
 {
     [SetUp]
     public void SetUp()
