@@ -18,7 +18,7 @@ public class CameraWaypointMove : MonoBehaviour
 
     [Header("Booleans to debug and when the camera should start moving")]
     [SerializeField]private bool isMoving = false;
-    [SerializeField]private bool shouldMove = false;
+    [SerializeField]public bool shouldMove = false;
 
     private Vector3 ResetStopPosition ;
 
