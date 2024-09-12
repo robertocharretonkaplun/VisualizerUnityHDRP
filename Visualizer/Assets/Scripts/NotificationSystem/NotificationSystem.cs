@@ -5,24 +5,19 @@ using UnityEngine.UI;
 
 public class NotificationSystem : MonoBehaviour
 {
-    public GameObject notificationPrefab; 
-    public Transform notificationParent;
+    [SerializeField] private GameObject notificationPrefab;
+    [SerializeField] private Transform notificationParent;
 
-    public void CreateNotification(NotificationData notificationData)
+    public void CreateNotification(string title, string message, float duration = 3f)
     {
+        
         GameObject newNotification = Instantiate(notificationPrefab, notificationParent);
 
-        Text titleText = newNotification.transform.Find("Titulo").GetComponent<Text>();
-        Text messageText = newNotification.transform.Find("Mensaje").GetComponent<Text>();
-        titleText.text = notificationData.title;
-        messageText.text = notificationData.message;
+        
+        NotificationData notificationData = newNotification.GetComponent<NotificationData>();
 
-        StartCoroutine(DestroyNotificationAfterDuration(newNotification, notificationData.duration));
-    }
-
-    private IEnumerator DestroyNotificationAfterDuration(GameObject notification, int duration)
-    {
-        yield return new WaitForSeconds(duration);
-        Destroy(notification);
+       
+        notificationData.SetNotificationData(title, message);
+        notificationData.Initialize(duration);  
     }
 }

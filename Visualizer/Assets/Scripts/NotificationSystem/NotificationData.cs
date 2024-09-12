@@ -1,17 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class NotificationData : MonoBehaviour
 {
-    public string title;
-    public string message;
-    public int duration;
+    [SerializeField] private TMP_Text titleText;  
+    [SerializeField] private TMP_Text messageText; 
+    [SerializeField] private float duration = 3f;
 
-    public NotificationData(string title, string message, int duration) 
+    public void SetNotificationData(string title, string message)
     {
-        this.title = title;
-        this.message = message;
-        this.duration = duration;
+        titleText.text = title;
+        messageText.text = message;
+    }
+
+    public void Initialize(float customDuration = -1)
+    {
+        if (customDuration > 0)
+        {
+            duration = customDuration;
+        }
+
+        StartCoroutine(DestroyAfterDuration());
+    }
+
+    private IEnumerator DestroyAfterDuration()
+    {
+        yield return new WaitForSeconds(duration);
+        Destroy(gameObject);  
     }
 }
