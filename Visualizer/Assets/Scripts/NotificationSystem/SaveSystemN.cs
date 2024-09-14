@@ -6,30 +6,28 @@ using UnityEngine;
 
 public class SaveSystemN : MonoBehaviour
 {
-    private string filePath;
+    private SaveReport saveReport = new SaveReport(); 
 
-    private void Start()
+  
+    public void AddNotificationToReport(string title, string message, float duration)
     {
-        filePath = Path.Combine(Application.persistentDataPath, "NotificationReport.json");
+        NotificationEntry entry = new NotificationEntry(title, message, duration);
+        saveReport.notifications.Add(entry);  
     }
 
-    public void SaveReport(SaveReport report)
+    public void SaveReportToFile(string filePath)
     {
-        string json = JsonUtility.ToJson(report, true);
-        File.WriteAllText(filePath, json);
-        UnityEngine.Debug.Log("Report saved at: " + filePath);
-    }
+        string json = JsonUtility.ToJson(saveReport, true);  
 
-    public SaveReport LoadReport()
-    {
-        if (File.Exists(filePath))
+        try
         {
-            string json = File.ReadAllText(filePath);
-            return JsonUtility.FromJson<SaveReport>(json);
+            File.WriteAllText(filePath, json);  
+            UnityEngine.Debug.Log("Reporte guardado en: " + filePath);
         }
-        else
+        catch (System.Exception e)
         {
-            return new SaveReport();
+            UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);
         }
+
     }
 }
