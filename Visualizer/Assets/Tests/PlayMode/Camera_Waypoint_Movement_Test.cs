@@ -91,7 +91,7 @@ public class Camera_Waypoint_Movement_Test
         //Check if camera is on the waypoint
         Transform lastWaypoint = cameraWaypointMoveScript.waypoints[0];
         Assert.AreEqual(lastWaypoint.position, cameraWaypointMoveScript.transform.position, "La cámara no llegó al waypoint esperado");
-        Debug.Log("La cámara llegó al waypoint.");
+        Debug.Log("La cámara llegó al waypoint");
     }
 
     [TearDown]
