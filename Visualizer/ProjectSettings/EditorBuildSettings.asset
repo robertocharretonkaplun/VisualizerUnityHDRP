@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Credits.unity
     guid: 3e510c31741c75141aaf7a931d85074d
+  - enabled: 1
+    path: Assets/Scenes/NavMesh.unity
+    guid: d6bceb08537d0a040a4e56cef9958ea6
   m_configObjects: {}
