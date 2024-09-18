@@ -13,6 +13,8 @@ public class NotificationData : MonoBehaviour
     {
         titleText.text = title;
         messageText.text = message;
+
+        initialized();
     }
 
     public void Initialize(float customDuration = -1)

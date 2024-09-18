@@ -6,16 +6,16 @@ using UnityEngine;
 [Serializable]
 public class SaveReport
 {
-    public List<NotificationEntry> notifications;  
-
-    public SaveReport()
-    {
-        notifications = new List<NotificationEntry>();
-    }
+    public int id;
+    public string date;
+    public string time;
+    public List<string> Actions;
+    public List<string> Notifications; 
+    public List<string> Errors;
 }
 
-[Serializable]
-public class NotificationEntry
+// CLASE PARA CADA PREFAB
+public class NotificationScript : MonoBehavior
 {
     public string title;    
     public string message;  

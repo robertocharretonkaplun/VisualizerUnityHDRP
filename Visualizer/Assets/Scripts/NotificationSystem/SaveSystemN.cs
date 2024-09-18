@@ -6,8 +6,9 @@ using UnityEngine;
 
 public class SaveSystemN : MonoBehaviour
 {
-    private SaveReport saveReport = new SaveReport(); 
-
+    private SaveReport saveReport; 
+    string FileName;
+    private string filePath;
   
     public void AddNotificationToReport(string title, string message, float duration)
     {
@@ -15,10 +16,25 @@ public class SaveSystemN : MonoBehaviour
         saveReport.notifications.Add(entry);  
     }
 
-    public void SaveReportToFile(string filePath)
-    {
-        string json = JsonUtility.ToJson(saveReport, true);  
+    public void CreateReport() {
+        SaveReport = new SaveReport();
 
+    }
+
+    // Esta funcion esta encarga de guardar reportes
+    public void SaveReportToFile()
+    {
+        string newFileName =  "Report " + SaveReport.id + " " + SaveReport.date;
+        FileName = newFileName;
+        string Folder = "/Reports/";
+        filePath = Application.dataPath + Folder + newFileName;
+        
+        string json = JsonUtility.ToJson(saveReport, true);  
+        SaveReport = new SaveReport{
+            id = PlayerPref.GetInt("id") + 1;
+            date = DateTime.now;
+
+        }
         try
         {
             File.WriteAllText(filePath, json);  
@@ -29,5 +45,10 @@ public class SaveSystemN : MonoBehaviour
             UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);
         }
 
+    }
+
+    public void SaveActionToReport(Action action) {
+        SaveReport.Actions.Add(action.data);
+        saveReport();
     }
 }
