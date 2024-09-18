@@ -73,17 +73,18 @@ public class MaterialDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandle
 
         if (Physics.Raycast(ray, out hit) && materialToApply != null)
         {
-            ApplyMaterialToHierarchy(hit.transform, materialToApply);
+            ApplyMaterialToHierarchyOrMeshRenderer(hit.transform, materialToApply);
         }
     }
 
     /// <summary>
-    /// Aplica el material a todos los Renderers en la jerarquía del objeto transform,
-    /// excepto si el objeto tiene el tag "Floor".
+    /// Aplica el material a todos los Renderers en la jerarquía del objeto transform
+    /// o a todos los subíndices del MeshRenderer si no tiene hijos.
+    /// Excepto si el objeto tiene el tag "Floor".
     /// </summary>
     /// <param name="parent">Transform del objeto padre.</param>
     /// <param name="material">Material a aplicar.</param>
-    private void ApplyMaterialToHierarchy(Transform parent, Material material)
+    private void ApplyMaterialToHierarchyOrMeshRenderer(Transform parent, Material material)
     {
         // Verifica si el objeto tiene el tag "Floor" antes de aplicar el material
         if (parent.CompareTag("Floor"))
@@ -91,17 +92,41 @@ public class MaterialDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandle
             return; // No aplica el material si el objeto tiene el tag "Floor"
         }
 
-        // Aplica el material al Renderer del objeto actual si existe
         Renderer parentRenderer = parent.GetComponent<Renderer>();
-        if (parentRenderer != null)
-        {
-            parentRenderer.material = material;
-        }
 
-        // Recorre todos los hijos y aplica el material
-        foreach (Transform child in parent)
+        // Si el objeto no tiene hijos pero tiene un MeshRenderer, aplica el material a todos sus subíndices
+        if (parent.childCount == 0 && parentRenderer != null && parentRenderer.materials.Length > 1)
         {
-            ApplyMaterialToHierarchy(child, material);
+            ApplyMaterialToAllSubMaterials(parentRenderer, material);
         }
+        else
+        {
+            // Aplica el material al Renderer del objeto actual si existe
+            if (parentRenderer != null)
+            {
+                parentRenderer.material = material;
+            }
+
+            // Recorre todos los hijos y aplica el material
+            foreach (Transform child in parent)
+            {
+                ApplyMaterialToHierarchyOrMeshRenderer(child, material);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Aplica el material a todos los subíndices del MeshRenderer del objeto.
+    /// </summary>
+    /// <param name="renderer">El MeshRenderer del objeto objetivo.</param>
+    /// <param name="material">El material a aplicar.</param>
+    private void ApplyMaterialToAllSubMaterials(Renderer renderer, Material material)
+    {
+        Material[] materials = renderer.materials; // Obtener todos los submateriales
+        for (int i = 0; i < materials.Length; i++)
+        {
+            materials[i] = material; // Reemplazar cada submaterial con el nuevo material
+        }
+        renderer.materials = materials; // Asignar los nuevos materiales
     }
 }
