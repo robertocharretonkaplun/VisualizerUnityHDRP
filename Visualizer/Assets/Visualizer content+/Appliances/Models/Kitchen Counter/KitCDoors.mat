@@ -27,7 +27,9 @@ Material:
   m_Shader: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
   m_ValidKeywords:
   - _DISABLE_SSR_TRANSPARENT
+  - _MASKMAP
   - _NORMALMAP
+  - _NORMALMAP_TANGENT_SPACE
   - _SPECULAR_OCCLUSION_NONE
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -89,7 +91,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: c26f7b72babb3bb418b535730b406164, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
@@ -195,10 +197,10 @@ Material:
     - _LinkDetailsWithBase: 1
     - _MaterialID: 1
     - _Metallic: 0.172
-    - _MetallicRemapMax: 1
+    - _MetallicRemapMax: 0.63883984
     - _MetallicRemapMin: 0
-    - _NormalMapSpace: 1
-    - _NormalScale: 0.32
+    - _NormalMapSpace: 0
+    - _NormalScale: 0.1
     - _OpaqueCullMode: 2
     - _PPDLodThreshold: 5
     - _PPDMaxSamples: 15
@@ -210,7 +212,7 @@ Material:
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 0
     - _Smoothness: 0.5
-    - _SmoothnessRemapMax: 1
+    - _SmoothnessRemapMax: 0.5884774
     - _SmoothnessRemapMin: 0
     - _SpecularAAScreenSpaceVariance: 0.1
     - _SpecularAAThreshold: 0.2
