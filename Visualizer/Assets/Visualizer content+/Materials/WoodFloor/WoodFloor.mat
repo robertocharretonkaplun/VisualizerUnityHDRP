@@ -90,7 +90,7 @@ Material:
         m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
-        m_Texture: {fileID: 2800000, guid: 505fed5cd4cdb8c4da05c9fe168d372a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 455ddddd8c23d9544b58c80bb1847ec6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
@@ -196,10 +196,10 @@ Material:
     - _LinkDetailsWithBase: 1
     - _MaterialID: 1
     - _Metallic: 0
-    - _MetallicRemapMax: 0.3041622
+    - _MetallicRemapMax: 0.5541622
     - _MetallicRemapMin: 0
     - _NormalMapSpace: 0
-    - _NormalScale: 1.2
+    - _NormalScale: 0.01
     - _OpaqueCullMode: 2
     - _PPDLodThreshold: 5
     - _PPDMaxSamples: 15
@@ -211,7 +211,7 @@ Material:
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 0
     - _Smoothness: 0.851
-    - _SmoothnessRemapMax: 0.63287085
+    - _SmoothnessRemapMax: 0.9106486
     - _SmoothnessRemapMin: 0
     - _SpecularAAScreenSpaceVariance: 0.1
     - _SpecularAAThreshold: 0.2
