@@ -51,7 +51,16 @@ public class SaveSystemN : MonoBehaviour
 
         // Define la carpeta donde se guardará el archivo, dentro de la carpeta "Reports" en la ruta de datos del juego.
         string Folder = "/Reports/";
-        filePath = UnityEngine.Application.dataPath + Folder + newFileName;  // Usar la referencia correcta
+        string folderPath = UnityEngine.Application.dataPath + Folder;  // Ruta a la carpeta "Reports"
+
+        // Verifica si la carpeta existe, si no, la crea.
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+
+        // Define la ruta completa del archivo dentro de la carpeta "Reports".
+        filePath = folderPath + newFileName;
 
         // Convierte el reporte a formato JSON para facilitar su almacenamiento.
         string json = JsonUtility.ToJson(saveReport, true);
@@ -59,13 +68,13 @@ public class SaveSystemN : MonoBehaviour
         try
         {
             // Escribe el archivo JSON en la ruta especificada.
-            File.WriteAllText(filePath, json);  
-            UnityEngine.Debug.Log("Reporte guardado en: " + filePath);  
+            File.WriteAllText(filePath, json);
+            UnityEngine.Debug.Log("Reporte guardado en: " + filePath);
         }
         catch (System.Exception e)
         {
             // Si ocurre un error durante la escritura del archivo, lo captura y muestra un mensaje de error en la consola de Unity.
-            UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);  
+            UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);
         }
     }
 

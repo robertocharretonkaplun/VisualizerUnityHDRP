@@ -10,7 +10,7 @@ public class NotificationData : MonoBehaviour
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text messageText;
 
-    / Duración predeterminada de la notificación(en segundos).
+    // Duración predeterminada de la notificación(en segundos).
     // Define cuánto tiempo se mostrará la notificación antes de desaparecer.
     [SerializeField] private float duration = 3f;
 
