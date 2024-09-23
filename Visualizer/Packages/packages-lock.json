@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "ca.andydbc.unity-texture-packer": {
-      "version": "file:C:/Users/pollo/Escritorio/unity-texture-packer-master",
+      "version": "file:../Assets/Plugins/TexturePacker",
       "depth": 0,
       "source": "local",
       "dependencies": {}
