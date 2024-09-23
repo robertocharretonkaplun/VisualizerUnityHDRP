@@ -8075,6 +8075,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: notificationPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 7186338054975496709, guid: 7a498a7e735a0794995f5348e7edd513,
+        type: 3}
+      propertyPath: m_TagString
+      value: DeactivatableObject
+      objectReference: {fileID: 0}
     - target: {fileID: 7329392086556814852, guid: 7a498a7e735a0794995f5348e7edd513,
         type: 3}
       propertyPath: m_Pivot.x
@@ -12926,8 +12931,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 661.6731, y: 12.871521}
-  m_SizeDelta: {x: -1323.3463, y: -824.3418}
+  m_AnchoredPosition: {x: 665.6078, y: 49.84964}
+  m_SizeDelta: {x: -1331.2157, y: -824.3306}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1265086288
 MonoBehaviour:
