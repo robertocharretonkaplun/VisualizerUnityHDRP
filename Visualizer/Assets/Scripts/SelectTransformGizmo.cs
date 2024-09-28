@@ -250,11 +250,11 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
 
-    // <summary>
+    /// <summary>
     /// Este método se invoca para aplicar un nuevo material a un objeto seleccionado.
     /// Si el objeto en cuestión es el actualmente seleccionado, actualiza su material
     /// en el diccionario de materiales originales.
-    ///
+    /// 
     /// <param name="target">El objeto `Transform` al que se le aplica el nuevo material.</param>
     /// <param name="newMaterial">El nuevo material que se aplicará al objeto.</param>
     /// </summary>
@@ -277,16 +277,27 @@ public class SelectTransformGizmo : MonoBehaviour
                     // Actualiza el array de materiales originales para este renderer
                     Material[] originalMaterials = originalMaterialsSelection[renderer.transform];
 
-                    // Si el número de materiales no coincide, crea un nuevo array con el tamaño adecuado
-                    if (originalMaterials.Length != renderer.materials.Length)
+                    // Crear un nuevo array de materiales si el renderer tiene más de un material
+                    if (renderer.materials.Length > 1)
                     {
-                        originalMaterialsSelection[renderer.transform] = new Material[renderer.materials.Length];
-                    }
+                        // Crear un nuevo array de materiales con un tamaño reducido
+                        Material[] newMaterialsArray = new Material[renderer.materials.Length - 1];
 
-                    // Actualiza los materiales originales con el nuevo material
-                    for (int i = 0; i < renderer.materials.Length; i++)
+                        // Copiar todos los materiales excepto el último
+                        for (int i = 0; i < newMaterialsArray.Length; i++)
+                        {
+                            newMaterialsArray[i] = renderer.materials[i];
+                        }
+
+                        // Asignar el nuevo array al MeshRenderer
+                        renderer.materials = newMaterialsArray;
+
+                        // Actualiza el array de materiales originales en el diccionario
+                        originalMaterialsSelection[renderer.transform] = newMaterialsArray; // Actualiza el diccionario con el nuevo array
+                    }
+                    else
                     {
-                        originalMaterialsSelection[renderer.transform][i] = newMaterial;
+                        Debug.LogWarning("El MeshRenderer tiene sólo un material, no se puede eliminar el último.");
                     }
                 }
                 else
@@ -295,14 +306,12 @@ public class SelectTransformGizmo : MonoBehaviour
                     originalMaterialsSelection.Add(renderer.transform, new Material[renderer.materials.Length]);
 
                     // Inicializa con el nuevo material aplicado
-                    for (int i = 0; i < renderer.materials.Length; i++)
-                    {
-                        originalMaterialsSelection[renderer.transform][i] = newMaterial;
-                    }
+                    originalMaterialsSelection[renderer.transform][0] = newMaterial; // Asigna el nuevo material
                 }
             }
         }
     }
+
     /// <summary>
     /// Maneja el cambio de selección en la jerarquía.
     /// </summary>

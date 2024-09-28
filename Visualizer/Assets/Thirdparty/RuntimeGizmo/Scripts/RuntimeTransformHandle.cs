@@ -67,7 +67,7 @@ namespace RuntimeHandle
             }
         }
 
-        // Método auxiliar para asignar un tag solo a los hijos del objeto
+        // Método para asignar un tag solo a los hijos del objeto
         void AssignTagToChildren(GameObject parent, string tag)
         {
             // Obtener todos los hijos del objeto padre
