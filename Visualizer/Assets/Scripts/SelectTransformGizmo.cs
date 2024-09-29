@@ -22,116 +22,114 @@ using UnityEngine.EventSystems;
 using RuntimeHandle;
 using RuntimeInspectorNamespace;
 /// <summary>
-/// Clase responsable de manejar la selección de objetos en la escena
-/// y aplicar un material de selección temporal cuando un objeto está seleccionado.
-/// También permite la manipulación del objeto seleccionado a través de un gizmo de transformación
-/// y tiene comunicacion con SaveSystem y MaterialDragHandler.
+/// Class responsible for managing the selection of objects in the scene
+/// and applying a temporary selection material when an object is selected.
+/// It also allows manipulation of the selected object through a transformation gizmo
+/// and communicates with the SaveSystem and MaterialDragHandler.
 /// </summary>
 public class SelectTransformGizmo : MonoBehaviour
 {
-    public Material selectionMaterial; // Material aplicado al objeto cuando está seleccionado.
-    public RuntimeHierarchy runtimeHierarchy; // Referencia a RuntimeHierarchy
-    public CameraM sceneCamera; // Referencia al script de la cámara
-    public MaterialDragHandler materialDragHandler; // Añadir referencia al MaterialDragHandler
+    public Material selectionMaterial; // Material applied to the object when it is selected.
+    public RuntimeHierarchy runtimeHierarchy; // Reference to the RuntimeHierarchy
+    public CameraM sceneCamera; // Reference to the camera script
+    public MaterialDragHandler materialDragHandler; // Reference to the MaterialDragHandler
 
-    private Dictionary<Transform, Material[]> originalMaterialsSelection = new Dictionary<Transform, Material[]>(); // Diccionario que almacena los materiales originales de los objetos seleccionados y los restaura.
-    private Transform selection; // Objeto actualmente seleccionado.
-    private RaycastHit raycastHit; // Almacena la información del rayo que colisiona con objetos en la escena.
-    private RaycastHit raycastHitHandle; // Almacena la información del rayo que colisiona con el gizmo de transformación.
-    private GameObject runtimeTransformGameObj; // El objeto que contiene el gizmo de transformación en tiempo de ejecución.
-    private RuntimeTransformHandle runtimeTransformHandle; // El script que maneja el gizmo de transformación.
-    private int runtimeTransformLayer = 6; // La capa de objetos interactuables por el gizmo.
-    private int runtimeTransformLayerMask; // Máscara de capa para filtrar objetos interactuables.
-    private bool focusOnSelectionRequested; // Indica si se ha solicitado enfocar la cámara en el objeto seleccionado.
+    // Dictionary storing the original materials of the selected objects for restoration.
+    private Dictionary<Transform, Material[]> originalMaterialsSelection = new Dictionary<Transform, Material[]>(); 
 
-    public event Action<Transform> OnSelectionChanged;  // Evento que se dispara cuando la selección cambia.
+    private Transform selection; // Currently selected object.
+    private RaycastHit raycastHit; // Stores information about the ray that collides with objects in the scene.
+    private RaycastHit raycastHitHandle; // Stores information about the ray that collides with the transformation gizmo.
+    private GameObject runtimeTransformGameObj; // The object that contains the runtime transformation gizmo.
+    private RuntimeTransformHandle runtimeTransformHandle; // The script that manages the transformation gizmo.
+    private int runtimeTransformLayer = 6; // The layer of interactable objects for the gizmo.
+    private int runtimeTransformLayerMask; // Layer mask to filter interactable objects.
+    private bool focusOnSelectionRequested; // Indicates if there is a request to focus the camera on the selected object.
+
+    public event Action<Transform> OnSelectionChanged; // Event triggered when the selection changes.
 
     /// <summary>
-    /// Método que se ejecuta al iniciar el componente. Se busca el script `MaterialDragHandler`
-    /// en la escena y se asigna.
+    /// Method that executes when the component starts. It finds and assigns the MaterialDragHandler script
+    /// in the scene.
     /// </summary>
     private void Awake()
     {
-        // Busca y asigna el script MaterialDragHandler en la escena.
+        // Finds and assigns the MaterialDragHandler script in the scene.
         materialDragHandler = FindObjectOfType<MaterialDragHandler>();
-
-        // Verificar si el selectTransformGizmo está asignado correctamente
-        Debug.Log(materialDragHandler != null ? "materialDragHandler está asignado." : "materialDragHandler no está asignado.");
     }
     /// <summary>
-    /// Método que se ejecuta cuando el objeto se activa. Inicializa el gizmo de transformación
-    /// y configura las capas y eventos necesarios.
+    /// Method that runs when the object is activated. Initializes the transformation gizmo
+    /// and sets up the necessary layers and events.
     /// </summary>
     private void Start()
     {
-        // Crea un nuevo GameObject para manejar el gizmo de transformación en tiempo de ejecución.
+        // Create a new GameObject to handle the runtime transformation gizmo.
         runtimeTransformGameObj = new GameObject();
         runtimeTransformHandle = runtimeTransformGameObj.AddComponent<RuntimeTransformHandle>();
         runtimeTransformGameObj.layer = runtimeTransformLayer;
 
-        // Configura la máscara de capa para filtrar objetos interactuables por el gizmo.
+        // Set up the layer mask to filter objects interactable by the gizmo.
         runtimeTransformLayerMask = 1 << runtimeTransformLayer; // Layer number represented by a single bit in the 32-bit integer using bit shift
 
-        // Configura el tipo de transformación del gizmo (en este caso, solo posición).
+        // Set the gizmo's transformation type (in this case, position only).
         runtimeTransformHandle.type = HandleType.POSITION;
         runtimeTransformHandle.autoScale = true;
         runtimeTransformHandle.autoScaleFactor = 1.0f;
 
-        // Desactiva el gizmo hasta que sea necesario.
+        // Deactivate the gizmo until it is needed.
         runtimeTransformGameObj.SetActive(false);
 
-        // Asigna una etiqueta al gizmo para que pueda ser desactivado posteriormente.
+        // Assign a tag to the gizmo so it can be deactivated later.
         runtimeTransformGameObj.tag = "DeactivatableObject";
 
-        // Suscribe el método `HandleSelectionChanged` al evento OnSelectionChanged.
+        // Subscribe the `HandleSelectionChanged` method to the OnSelectionChanged event.
         OnSelectionChanged += HandleSelectionChanged;
 
-        // Si hay una jerarquía en tiempo de ejecución disponible, se suscribe a los cambios de selección.
+        // If a runtime hierarchy is available, subscribe to selection changes.
         if (runtimeHierarchy != null)
         {
-            // Suscribir un método que maneje los cambios de selección en la jerarquía (si está disponible).
+            // Subscribe a method to handle selection changes in the hierarchy (if available).
             // runtimeHierarchy.OnSelectionChanged += HandleHierarchySelectionChanged;
         }
     }
-
     /// <summary>
-    /// Verifica y registra si se ha aplicado un material al objeto actual en el `MeshRenderer`.
+    /// Checks and logs if a material has been applied to the current object in the `MeshRenderer`.
     /// </summary>
-    /// <param name="renderer">El `MeshRenderer` del objeto.</param>
+    /// <param name="renderer">The `MeshRenderer` of the object.</param>
     private void CheckAndLogMaterialApplication(MeshRenderer renderer)
     {
-        // Verifica si el `MeshRenderer` tiene materiales y si contiene algún material específico.
+        // Checks if the `MeshRenderer` has materials and if it contains a specific material.
         if (renderer.materials.Length > 0 && ArrayContainsMaterial(renderer.materials, selectionMaterial))
         {
             Debug.Log("Se ha aplicado un nuevo material desde D&D");
         }
     }
     /// <summary>
-    /// Método que se ejecuta en cada frame para gestionar la selección de objetos, la activación del gizmo de transformación
-    /// y la aplicación de materiales de selección. También permite eliminar el objeto seleccionado.
+    /// Method executed every frame to handle object selection, activation of the transformation gizmo,
+    /// and application of selection materials. It also allows the deletion of the selected object.
     /// </summary>
     private void Update()
     {
-        // Selección y enfoque en el objeto
+        // Object selection and camera focus
         if (Input.GetKeyDown(KeyCode.F) && focusOnSelectionRequested)
         {
             if (sceneCamera != null && selection != null)
             {
-                sceneCamera.SetTargetObject(selection); // Enfocar la cámara en el objeto seleccionado
+                sceneCamera.SetTargetObject(selection); // Focus the camera on the selected object
             }
-            focusOnSelectionRequested = false; // Resetea la bandera
+            focusOnSelectionRequested = false; // Reset the flag
         }
-        // Selección de objetos con clic izquierdo del ratón
+        // Object selection with left mouse click
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
         {
-            ApplyLayerToChildren(runtimeTransformGameObj); // Asegurarse de que el gizmo de transformación esté en la capa correcta
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out raycastHit)) // Lanzar un rayo desde la cámara a través de la posición del ratón
+            ApplyLayerToChildren(runtimeTransformGameObj); // Ensure the transform gizmo is in the correct layer
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out raycastHit)) // Cast a ray from the camera through the mouse position
             {
                 if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out raycastHitHandle, Mathf.Infinity, runtimeTransformLayerMask)) // Raycast towards runtime transform handle only
                 {
-                    // No hacer nada si el rayo colisiona con el gizmo de transformación
+                    // Do nothing if the ray collides with the transformation gizmo
                 }
-                else if (raycastHit.transform.CompareTag("Selectable")) // Comprobar si el objeto con el que colisiona el rayo tiene el tag "Selectable"
+                else if (raycastHit.transform.CompareTag("Selectable")) // Check if the hit object is tagged as "Selectable"
                 {
                     if (selection != null)
                     {
@@ -143,10 +141,9 @@ public class SelectTransformGizmo : MonoBehaviour
                     {
                         if (!ArrayContainsMaterial(renderer.materials, selectionMaterial)) // Add the selection material
                         {
-                            originalMaterialsSelection[renderer.transform] = renderer.materials; // Guardar los materiales originales
-                            ApplyMaterial(renderer, selectionMaterial); // Aplicar el nuevo material de seleccion
-                            CheckAndLogMaterialApplication(renderer); // Verificar y registrar la aplicación del material
-                            //Debug.Log("Hola"); // Mensaje en la consola
+                            originalMaterialsSelection[renderer.transform] = renderer.materials; // Save the original materials
+                            ApplyMaterial(renderer, selectionMaterial); // Apply the selection material
+                            CheckAndLogMaterialApplication(renderer); // Check and log the material application
                         }
                     }
                     runtimeTransformHandle.target = selection; // Assign the selected object to the runtime transform handle
@@ -215,85 +212,82 @@ public class SelectTransformGizmo : MonoBehaviour
         }
     }
     /// <summary>
-    /// Obtiene el objeto actualmente seleccionado.
+    /// Gets the currently selected object.
     /// </summary>
-    /// <returns>El objeto seleccionado.</returns>
+    /// <returns>The selected object.</returns>
     public Transform GetCurrentSelection()
     {
-        return selection; // Devuelve el objeto seleccionado
+        return selection; // Returns the selected object
     }
     /// <summary>
-    /// Aplica un material al renderer de un objeto.
+    /// Applies a material to the renderer of an object.
     /// </summary>
-    /// <param name="renderer">El MeshRenderer al que se le aplicará el material.</param>
-    /// <param name="material">El material que se aplicará.</param>
+    /// <param name="renderer">The MeshRenderer to which the material will be applied.</param>
+    /// <param name="material">The material to be applied.</param>
     private void ApplyMaterial(MeshRenderer renderer, Material material)
     {
-        Material[] newMaterials = new Material[renderer.materials.Length + 1]; // Crear un nuevo array de materiales
-        renderer.materials.CopyTo(newMaterials, 0); // Copiar los materiales originales al nuevo array
-        newMaterials[newMaterials.Length - 1] = material; // Agregar el nuevo material al final del array
-        renderer.materials = newMaterials; // Aplicar el nuevo array de materiales
+        Material[] newMaterials = new Material[renderer.materials.Length + 1]; // Create a new array of materials
+        renderer.materials.CopyTo(newMaterials, 0); // Copy the original materials to the new array
+        newMaterials[newMaterials.Length - 1] = material; // Add the new material to the end of the array
+        renderer.materials = newMaterials; // Apply the new array of materials
     }
     /// <summary>
-    /// Maneja el cambio de selección en la jerarquía.
+    /// Handles the selection change in the hierarchy.
     /// </summary>
-    /// <param name="newSelection">El nuevo objeto seleccionado.</param>
+    /// <param name="newSelection">The new selected object.</param>
     private void HandleSelectionChanged(Transform newSelection)
     {
         if (runtimeHierarchy != null)
         {
-            runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Actualizar la selección en RuntimeHierarchy
+            runtimeHierarchy.Select(newSelection, RuntimeHierarchy.SelectOptions.FocusOnSelection); // Update the selection in RuntimeHierarchy
         }
         if (sceneCamera != null)
         {
             focusOnSelectionRequested = true; // Set flag to request focus on the next F key press
         }
     }
-
     /// <summary>
-    /// Este método se invoca para aplicar un nuevo material a un objeto seleccionado.
-    /// Si el objeto en cuestión es el actualmente seleccionado, actualiza su material
-    /// en el diccionario de materiales originales.
+    /// This method is invoked to apply a new material to a selected object.
+    /// If the object in question is the currently selected one, it updates its material
+    /// in the original materials dictionary.
     /// 
-    /// <param name="target">El objeto `Transform` al que se le aplica el nuevo material.</param>
-    /// <param name="newMaterial">El nuevo material que se aplicará al objeto.</param>
+    /// <param name="target">The `Transform` object to which the new material will be applied.</param>
+    /// <param name="newMaterial">The new material to be applied to the object.</param>
     /// </summary>
     public void OnMaterialApplied(Transform target, Material newMaterial)
     {
-        // Verifica si el objeto objetivo es el actualmente seleccionado
+        // Check if the target object is the currently selected one
         if (target == selection)
         {
-            Debug.Log("Se ha aplicado un nuevo material al objeto seleccionado con SelectTG.");
-
-            // Obtiene todos los MeshRenderers del objeto seleccionado y de sus hijos
+            // Get all MeshRenderers from the selected object and its children
             MeshRenderer[] renderers = target.GetComponentsInChildren<MeshRenderer>();
 
-            // Recorre todos los MeshRenderers y actualiza el material en el diccionario
+            // Iterate through all the MeshRenderers and update the material in the dictionary
             foreach (MeshRenderer renderer in renderers)
             {
-                // Verifica si este renderer ya tiene materiales originales almacenados
+                // Check if this renderer already has original materials stored
                 if (originalMaterialsSelection.ContainsKey(renderer.transform))
                 {
-                    // Actualiza el array de materiales originales para este renderer
+                    // Update the original materials array for this renderer
                     Material[] originalMaterials = originalMaterialsSelection[renderer.transform];
 
-                    // Crear un nuevo array de materiales si el renderer tiene más de un material
+                    // Create a new materials array if the renderer has more than one material
                     if (renderer.materials.Length > 1)
                     {
-                        // Crear un nuevo array de materiales con un tamaño reducido
+                        // Create a new materials array with reduced size
                         Material[] newMaterialsArray = new Material[renderer.materials.Length - 1];
 
-                        // Copiar todos los materiales excepto el último
+                        // Copy all materials except the last one
                         for (int i = 0; i < newMaterialsArray.Length; i++)
                         {
                             newMaterialsArray[i] = renderer.materials[i];
                         }
 
-                        // Asignar el nuevo array al MeshRenderer
+                        // Assign the new array to the MeshRenderer
                         renderer.materials = newMaterialsArray;
 
-                        // Actualiza el array de materiales originales en el diccionario
-                        originalMaterialsSelection[renderer.transform] = newMaterialsArray; // Actualiza el diccionario con el nuevo array
+                        // Update the original materials array in the dictionary
+                        originalMaterialsSelection[renderer.transform] = newMaterialsArray; // Update the dictionary with the new array
                     }
                     else
                     {
@@ -302,106 +296,105 @@ public class SelectTransformGizmo : MonoBehaviour
                 }
                 else
                 {
-                    // Si el renderer no tiene materiales guardados, se agrega al diccionario
+                    // If the renderer does not have stored materials, add it to the dictionary
                     originalMaterialsSelection.Add(renderer.transform, new Material[renderer.materials.Length]);
 
-                    // Inicializa con el nuevo material aplicado
-                    originalMaterialsSelection[renderer.transform][0] = newMaterial; // Asigna el nuevo material
+                    // Initialize with the newly applied material
+                    originalMaterialsSelection[renderer.transform][0] = newMaterial; // Assign the new material
                 }
             }
         }
     }
-
     /// <summary>
-    /// Maneja el cambio de selección en la jerarquía.
+    /// Handles the change of selection in the hierarchy.
     /// </summary>
-    /// <param name="newSelection">El nuevo objeto seleccionado.</param>
+    /// <param name="newSelection">The newly selected object.</param>
     private void HandleHierarchySelectionChanged(Transform newSelection)
     {
-        HandleSelectionChanged(newSelection); // Manejar el hierarchy selection change
+        HandleSelectionChanged(newSelection); // Handle the hierarchy selection change
     }
     /// <summary>
-    /// Aplica la capa del GameObject padre a todos sus hijos.
+    /// Applies the layer of the parent GameObject to all its children.
     /// </summary>
-    /// <param name="parentGameObj">El GameObject padre cuyo layer se aplicará a los hijos.</param>
+    /// <param name="parentGameObj">The parent GameObject whose layer will be applied to the children.</param>
     private void ApplyLayerToChildren(GameObject parentGameObj)
     {
         foreach (Transform transform1 in parentGameObj.transform)
         {
-            int layer = parentGameObj.layer; // Obtener la capa del GameObject padre
-            transform1.gameObject.layer = layer; // Aplicar la capa al hijo
+            int layer = parentGameObj.layer; // Get the layer of the parent GameObject
+            transform1.gameObject.layer = layer; // Apply the layer to the child
             foreach (Transform transform2 in transform1)
             {
-                transform2.gameObject.layer = layer; // Aplicar la capa a los nietos
+                transform2.gameObject.layer = layer; // Apply the layer to the grandchildren
                 foreach (Transform transform3 in transform2)
                 {
-                    transform3.gameObject.layer = layer; // Aplicar la capa a los bisnietos
+                    transform3.gameObject.layer = layer; // Apply the layer to the great-grandchildren
                     foreach (Transform transform4 in transform3)
                     {
-                        transform4.gameObject.layer = layer; // Aplicar la capa a los tataranietos
+                        transform4.gameObject.layer = layer; // Apply the layer to the great-great-grandchildren
                         foreach (Transform transform5 in transform4)
                         {
-                            transform5.gameObject.layer = layer; // Aplicar la capa a los ya no me se mas terminos pero el que sigue
+                            transform5.gameObject.layer = layer; //Apply the layer to I don't know any more terms
                         }
                     }
                 }
             }
         }
     }
-    // <summary>
-    /// Comprueba si un material ya existe en un array de materiales.
+    /// <summary>
+    /// Checks if a material already exists in an array of materials.
     /// </summary>
-    /// <param name="materials">Array de materiales a comprobar.</param>
-    /// <param name="material">El material que se busca.</param>
-    /// <returns>True si el material existe en el array, de lo contrario False.</returns>
+    /// <param name="materials">Array of materials to check.</param>
+    /// <param name="material">The material being searched for.</param>
+    /// <returns>True if the material exists in the array, otherwise False.</returns>
     private bool ArrayContainsMaterial(Material[] materials, Material material) // Check if a material already exists in an array of materials
     {
         foreach (var mat in materials)
         {
             if (mat == material)
             {
-                return true; // El material existe
+                return true; // The material exists
             }
         }
-        return false; // El material no existe
+        return false; // The material does not exist
     }
     /// <summary>
-    /// Obtiene todos los MeshRenderers de un objeto y sus hijos.
+    /// Retrieves all MeshRenderers from an object and its children.
     /// </summary>
-    /// <param name="transform">El objeto del cual se obtendrán los MeshRenderers.</param>
-    /// <returns>Array de MeshRenderers encontrados.</returns>
+    /// <param name="transform">The object from which the MeshRenderers will be retrieved.</param>
+    /// <returns>Array of MeshRenderers found.</returns>
     private MeshRenderer[] GetMeshRenderers(Transform transform)
     {
-        List<MeshRenderer> renderers = new List<MeshRenderer>(transform.GetComponentsInChildren<MeshRenderer>());// Obtener todos los MeshRenderers en el objeto y sus hijos
-        return renderers.ToArray(); // Devolver como array
+        List<MeshRenderer> renderers = new List<MeshRenderer>(transform.GetComponentsInChildren<MeshRenderer>());// Get all MeshRenderers from the object and its children
+        return renderers.ToArray(); // Return as an array
     }
     /// <summary>
-    /// Establece los materiales originales en un objeto y sus hijos.
+    /// Restores the original materials on an object and its children.
     /// </summary>
-    /// <param name="transform">El objeto en el que se restaurarán los materiales.</param>
-    /// <param name="materialsDict">Diccionario que contiene los materiales originales.</param>
-    /// <param name="isSelection">Indica si se está restaurando desde una selección.</param>
+    /// <param name="transform">The object where the materials will be restored.</param>
+    /// <param name="materialsDict">Dictionary containing the original materials.</param>
+    /// <param name="isSelection">Indicates if the restoration is part of a selection process.</param>
     private void SetMaterials(Transform transform, Dictionary<Transform, Material[]> materialsDict, bool isSelection)
     {
-        MeshRenderer[] renderers = GetMeshRenderers(transform); // Obtener los MeshRenderers del objeto
+        MeshRenderer[] renderers = GetMeshRenderers(transform); // Get the MeshRenderers of the object
         foreach (MeshRenderer renderer in renderers)
         {
             if (materialsDict.TryGetValue(renderer.transform, out Material[] originalMaterials))
             {
-                renderer.materials = originalMaterials; // Restaurar los materiales originales
+                renderer.materials = originalMaterials; // Restore the original materials
                 if (isSelection)
                 {
-                    materialsDict.Remove(renderer.transform); // Eliminar el objeto del diccionario si es parte de la selección
+                    materialsDict.Remove(renderer.transform); // Remove the object from the dictionary if it's part of the selection
                 }
             }
         }
     }
     /// <summary>
-    /// Obtiene el GameObject del transform dinámico.
+    /// Retrieves the GameObject of the dynamic transform.
     /// </summary>
-    /// <returns>El GameObject dinámico que contiene el RuntimeTransformHandle.</returns>
+    /// <returns>The dynamic GameObject that contains the RuntimeTransformHandle.</returns>
     public GameObject GetRuntimeTransformGameObject()
     {
-        return runtimeTransformGameObj; // Devuelve el GameObject dinámico runtimeTransformGameObj que tiene asignado un RuntimeTransformHandle proporcionando funcionalidades para manipular transfromaciones del Obj seleccionado
+        return runtimeTransformGameObj; // Returns the dynamic GameObject 'runtimeTransformGameObj' which has a RuntimeTransformHandle assigned, providing functionalities to manipulate the selected object's transformations
     }
 }

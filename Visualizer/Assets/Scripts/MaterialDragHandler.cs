@@ -5,186 +5,176 @@ using UnityEngine.UI;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 /// <summary>
-/// Permite arrastrar materiales y soltarlos sobre un modelo para aplicar el material ademas se comunica con SelectTransformGizmo para un buen funcionamiento entre ambos.
+/// Allows dragging materials and dropping them onto a model to apply the material. 
+/// It also communicates with SelectTransformGizmo for proper interaction between both systems.
 /// </summary>
 public class MaterialDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Material materialToApply; // Material que se aplicará al soltar
-    public SelectTransformGizmo selectTransformGizmo; // Referencia al script SelectTransformGizmo
+    public Material materialToApply; // Material to apply upon drop
+    public SelectTransformGizmo selectTransformGizmo; // Reference to the SelectTransformGizmo script
     private Camera mainCamera;
-    private Image materialImage; // Imagen del material para representar visualmente el arrastre en el canvas
-    private RectTransform rectTransform; // Componente de la imagen que controla la posición y el tamaño
-    private Vector3 originalScale; // Escala original de la imagen
-    private Vector3 originalPosition; // Posición original de la imagen
+    private Image materialImage; // Image of the material to visually represent dragging in the canvas
+    private RectTransform rectTransform; // RectTransform component controlling the position and size
+    private Vector3 originalScale; // Original scale of the image
+    private Vector3 originalPosition; // Original position of the image
 
     private void Awake()
     {
-        // Buscar el SelectTransformGizmo en la escena
+        // Find the SelectTransformGizmo in the scene
         selectTransformGizmo = FindObjectOfType<SelectTransformGizmo>();
 
-        // Verificar si el selectTransformGizmo está asignado correctamente
+        // Check if the selectTransformGizmo is correctly assigned
         Debug.Log(selectTransformGizmo != null ? "SelectTransformGizmo está asignado." : "SelectTransformGizmo no está asignado.");
     }
-
     /// <summary>
-    /// Configura la cámara principal y las referencias a los componentes `Image` y `RectTransform`.
+    /// Sets up the main camera and references to the `Image` and `RectTransform` components.
     /// </summary>
     private void Start()
     {
-        mainCamera = Camera.main; // Obtiene la cámara principal de la escena
-        materialImage = GetComponent<Image>(); // Obtener el componente Image del GameObject
-        rectTransform = GetComponent<RectTransform>(); // Obtiene el componente `RectTransform`, que se utiliza para modificar posición, escala, etc.
+        mainCamera = Camera.main; // Get the main camera of the scene
+        materialImage = GetComponent<Image>(); // Get the Image component from the GameObject
+        rectTransform = GetComponent<RectTransform>(); // Get the `RectTransform` component used to modify position, scale, etc.
 
-        // Guarda la escala y la posición originales de la imagen antes del arrastre
+        // Store the original scale and position of the image before dragging
         originalScale = rectTransform.localScale;
         originalPosition = rectTransform.position; 
     }
-
     /// <summary>
-    /// Método que se ejecuta cuando se comienza a arrastrar el material.
+    /// Method executed when the material begins to drag.
     /// </summary>
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Cambia la transparencia de la imagen para indicar el arrastre
+        // Change the transparency of the image to indicate dragging
         if (materialImage != null)
         {
             Color color = materialImage.color;
-            color.a = 0.7f; // Cambia la transparencia a 70%
+            color.a = 0.7f; // Change the transparency to 70%
             materialImage.color = color;
 
-            // Aumenta el tamaño del icono para el efecto de arrastre
+            // Increase the size of the icon for a drag effect
             rectTransform.localScale = originalScale * 1.2f;
         }
     }
-
     /// <summary>
-    /// Durante el arrastre, se puede mostrar un efecto visual si es necesario.
+    /// During dragging, a visual effect can be shown if necessary.
     /// </summary>
     public void OnDrag(PointerEventData eventData)
     {
-        // Actualiza la posición de la imagen para que siga el cursor del ratón durante el arrastre
+        // Update the image's position to follow the mouse cursor during dragging
         rectTransform.position = eventData.position;
     }
-
-    // <summary>
-    /// Método que se ejecuta al finalizar el arrastre, y aplica el material si es posible.
+    /// <summary>
+    /// Method executed when dragging ends, and applies the material if possible.
     /// </summary>
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Restablece la transparencia, el tamaño y la posición de la imagen al finalizar el arrastre
+        // Restores the transparency, size, and position of the image after the drag ends
         if (materialImage != null)
         {
             Color color = materialImage.color;
-            color.a = 1.0f; // Restablece la transparencia al 100%
+            color.a = 1.0f; // Restores transparency to 100%
             materialImage.color = color;
 
-            // Restablece el tamaño original
+            // Restores the original size
             rectTransform.localScale = originalScale;
 
-            // Restablece la posición original
+            // Restores the original position
             rectTransform.position = originalPosition;
         }
-        // Lanza un rayo desde la posición del ratón para detectar si golpea un objeto
+        // Casts a ray from the mouse position to detect if it hits an object
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            // Aplica el material a la jerarquía del objeto o a sus MeshRenderers
+            // Applies the material to the object's hierarchy or its MeshRenderers
             ApplyMaterialToHierarchyOrMeshRenderer(hit.transform, materialToApply);
 
-            // Comunicar a SelectTransformGizmo que se ha aplicado un material al objeto seleccionado
+            // Notifies SelectTransformGizmo that a material has been applied to the selected object
             if (selectTransformGizmo != null && selectTransformGizmo.GetCurrentSelection() == hit.transform)
             {
-                // Llama a un método en SelectTransformGizmo que maneje la actualización de materiales
+                // Calls a method in SelectTransformGizmo to handle material updates
                 selectTransformGizmo.OnMaterialApplied(hit.transform, materialToApply);
             }
         }
     }
-
     /// <summary>
-    /// Aplica el material a todos los `MeshRenderers` del padre dentro de la jerarquía del objeto `Transform`.
-    /// Si el objeto no tiene hijos, aplica el material a todos los subíndices del `MeshRenderer`.
-    /// Excluye los objetos que tienen el tag "Floor", para los cuales no se aplica el material.
+    /// Applies the material to all `MeshRenderers` in the parent within the object's `Transform` hierarchy.
+    /// If the object has no children, it applies the material to all sub-indices of the `MeshRenderer`.
+    /// Excludes objects with the "Floor" tag, as the material will not be applied to them.
     /// </summary>
-    /// <param name="target">El objeto `Transform` objetivo al cual se le aplicará el material.</param>
-    /// <param name="material">El material que se aplicará.</param>
+    /// <param name="target">The target `Transform` object to which the material will be applied.</param>
+    /// <param name="material">The material to be applied.</param>
     private void ApplyMaterialToHierarchyOrMeshRenderer(Transform target, Material material)
     {
-        // Verifica si el objeto tiene el tag "Floor" antes de aplicar el material
+        // Check if the object has the "Floor" tag before applying the material
         if (target.CompareTag("Floor"))
         {
-            return; // No aplica el material si el objeto tiene el tag "Floor"
+            return; // Do not apply the material if the object has the "Floor" tag
         }
 
-        // Aplica el material a todos los MeshRenderers del objeto y sus hijos
+        // Apply the material to all MeshRenderers of the object and its children
         MeshRenderer[] renderers = target.GetComponentsInChildren<MeshRenderer>();
 
         foreach (MeshRenderer renderer in renderers) 
         {
-            // Verifica si el objeto está seleccionado
+            // Check if the object is selected
             bool isSelected = selectTransformGizmo != null && selectTransformGizmo.GetCurrentSelection() == target;
 
-            // Obtener los materiales actuales
+            // Get the current materials
             Material[] currentMaterials = renderer.materials;
 
-            // Si el objeto está seleccionado, se reemplazan todos los materiales menos el último
+            // If the object is selected, replace all materials except the last one
             if (isSelected)
             {
                 int materialCount = currentMaterials.Length;
 
-                // Si hay más de un material, se reserva el último para el material de selección
+                // If there is more than one material, keep the last one for the selection material
                 if (materialCount > 1)
                 {
-                    // Crear un nuevo array de materiales que conserve el último material (de selección)
+                    // Create a new array of materials keeping the last material (selection)
                     Material[] newMaterials = new Material[materialCount];
 
-                    // Reemplazar todos los materiales excepto el último
+                    // Replace all materials except the last one
                     for (int i = 0; i < materialCount - 1; i++)
                     {
                         newMaterials[i] = material;
                     }
 
-                    // Mantener el último material intacto (el de selección)
+                    // Keep the last material intact (selection material)
                     newMaterials[materialCount - 1] = currentMaterials[materialCount - 1];
 
-                    // Aplicar los nuevos materiales al MeshRenderer
+                    // Apply the new materials to the MeshRenderer
                     renderer.materials = newMaterials;
                 }
                 else
                 {
-                    // Si solo hay un material, lo reemplaza por completo
+                    // If there's only one material, replace it entirely
                     renderer.material = material;
                 }
-
-                Debug.Log("Material aplicado al objeto seleccionado, manteniendo el material de selección.");
             }
             else
             {
-                // Si el objeto no está seleccionado, reemplazar todos los materiales normalmente
+                // If the object is not selected, replace all materials normally
                 for (int i = 0; i < currentMaterials.Length; i++)
                 {
                     currentMaterials[i] = material;
                 }
-
                 renderer.materials = currentMaterials;
-
-                Debug.Log("Material aplicado al objeto no seleccionado.");
             }
         }
     }
-
     /// <summary>
-    /// Reemplaza todos los submateriales de un solo `MeshRenderer` con un nuevo material.
+    /// Replaces all sub-materials of a single `MeshRenderer` with a new material.
     /// </summary>
-    /// <param name="renderer">El `MeshRenderer` objetivo.</param>
-    /// <param name="material">El nuevo material que se aplicará a todos los subíndices.</param>
+    /// <param name="renderer">The target `MeshRenderer`.</param>
+    /// <param name="material">The new material to be applied to all sub-indices.</param>
     private void ApplyMaterialToAllSubMaterials(Renderer renderer, Material material)
     {
-        Material[] materials = renderer.materials; // Obtiene todos los submateriales del `MeshRenderer`
+        Material[] materials = renderer.materials; // Get all sub-materials from the `MeshRenderer`
 
         for (int i = 0; i < materials.Length; i++)
         {
-            materials[i] = material; // Reemplazar cada submaterial con el nuevo material
+            materials[i] = material; // Replace each sub-material with the new material
         }
-        renderer.materials = materials; // Asignar los nuevos materiales
+        renderer.materials = materials; // Assign the new materials
     }
 }

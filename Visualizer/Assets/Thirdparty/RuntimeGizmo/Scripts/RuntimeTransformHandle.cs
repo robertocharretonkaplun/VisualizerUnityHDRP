@@ -54,29 +54,29 @@ namespace RuntimeHandle
             {
                 case HandleType.POSITION:
                     _positionHandle = gameObject.AddComponent<PositionHandle>().Initialize(this);
-                    AssignTagToChildren(gameObject, "Floor"); // Asignar tag solo a los hijos para el gizmo de posición
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for position gizmo
                     break;
                 case HandleType.ROTATION:
                     _rotationHandle = gameObject.AddComponent<RotationHandle>().Initialize(this);
-                    AssignTagToChildren(gameObject, "Floor"); // Asignar tag solo a los hijos para el gizmo de rotación
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for rotation gizmo
                     break;
                 case HandleType.SCALE:
                     _scaleHandle = gameObject.AddComponent<ScaleHandle>().Initialize(this);
-                    AssignTagToChildren(gameObject, "Floor"); // Asignar tag solo a los hijos para el gizmo de escala
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for scale gizmo
                     break;
             }
         }
 
-        // Método para asignar un tag solo a los hijos del objeto
+        // Method to assign a tag only to the children of the object
         void AssignTagToChildren(GameObject parent, string tag)
         {
-            // Obtener todos los hijos del objeto padre
+            // Get all children of the parent object
             Transform[] children = parent.GetComponentsInChildren<Transform>();
 
-            // Asignar el tag solo a los hijos, ignorando el objeto padre
+            // Assign the tag only to the children, ignoring the parent object
             foreach (Transform child in children)
             {
-                if (child != parent.transform) // Ignorar el objeto padre
+                if (child != parent.transform) // Ignore the parent object
                 {
                     child.gameObject.tag = tag;
                 }
