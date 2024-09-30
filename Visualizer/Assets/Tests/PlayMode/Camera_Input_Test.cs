@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-//Method to check camera movements
+//Class to check camera movements
 public class CameraMovementTest
 {
     private GameObject testObject;
@@ -30,6 +30,7 @@ public class CameraMovementTest
         yield return null;
     }
 
+    //Method to simulate camera movement (Zoom, movement, rotation and snap)
     [UnityTest]
     public IEnumerator CameraMovementAndSnapTest()
     {

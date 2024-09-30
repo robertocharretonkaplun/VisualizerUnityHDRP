@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-//Method to check camera waypoint move
+//Class to check camera waypoint move
 public class Camera_Waypoint_Movement_Test 
 {
     //Reference objects
@@ -20,6 +20,7 @@ public class Camera_Waypoint_Movement_Test
         SceneManager.LoadScene("AlphaShowMode");
     }
 
+    //Method to instance a waypoint and camera moves to waypoint
     [UnityTest]
     public IEnumerator Test_CameraMovesToWaypoint()
     {

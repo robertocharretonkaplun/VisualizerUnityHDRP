@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.TestTools;
 using UnityEditor;
 
-//We need comprobe that the panels are a correctly activation and desactivation
+//Class to comprobe to panels are a correctly activation and desactivation
 public class UI_Panel_Test
 {
     //Need reference the panels and buttons
@@ -40,6 +40,7 @@ public class UI_Panel_Test
         yield return null; // Wait to complete the configuration
     }
 
+    //Method to off panels when i open other panel
     [UnityTest]
     public IEnumerator On_Off_Panels_UI()
     {

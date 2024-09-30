@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-//Method to check waypoint instantiate
+//Class to check waypoint instantiate
 public class Instantiation_Waypoints_Test
 {
     private Waypoints waypointsScript;
@@ -17,6 +17,7 @@ public class Instantiation_Waypoints_Test
         SceneManager.LoadScene("AlphaShowMode");
     }
 
+    //Method to spawn waypoint in a specific position
     [UnityTest]
     public IEnumerator Test_WaypointInstantiation()
     {

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
-//This methos is to check play animation when "AccesBar_ContentBtn" is clicked
+//Class is to check play animation when "AccesBar_ContentBtn" is clicked
 public class Animation_Drawer_Test
 {
     //References to script, canvas, button and drawer
@@ -45,6 +45,7 @@ public class Animation_Drawer_Test
         Debug.Log("Script encontrado");
     }
 
+    //Method to check animation to drawerContentBtn whe is invoked
     [UnityTest]
     public IEnumerator TestAnimationIsPlaying()
     {

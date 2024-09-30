@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 
-//Method to check funtion to UI show mode button
+//Class to check funtion to UI show mode buttons
 public class UI_Show_Mode_Test
 {
     private GameObject showModeCanvas;
@@ -61,6 +61,7 @@ public class UI_Show_Mode_Test
         Debug.Log("Se encontraron los scripts");
     }
 
+    //Method to check all UI buttons and method to dissapear UI
     [UnityTest]
     public IEnumerator TestButtonFunctionality()
     {

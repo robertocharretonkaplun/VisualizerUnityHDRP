@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-//Method to check the correctly instance object
+//Class to check the correctly instance object
 public class Test_Instance_Object
 {
     private LevelEditor_Manager levelEditor_Manager;
@@ -17,6 +17,7 @@ public class Test_Instance_Object
         SceneManager.LoadScene("Alpha");
     }
 
+    //Method to instance test object in a specific point on the map
     [UnityTest]
     public IEnumerator Test_ItemInstantiation()
     {

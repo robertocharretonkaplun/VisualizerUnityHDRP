@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
+//Class to change material to object with DragAndDrop
 public class DragAndDropTest
 {
     private GameObject table;
@@ -37,6 +38,7 @@ public class DragAndDropTest
         Debug.Log("Materiales originales guardados");
     }
 
+    //Method to check reference material when I change it
     [UnityTest]
     public IEnumerator DragAndDropMaterialToGameObject()
     {

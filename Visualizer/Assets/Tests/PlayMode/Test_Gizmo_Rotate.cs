@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
+//Class to verify correctly rotate to Gizmo rotate
 public class Test_Gizmo_Rotate
 {
     private GameObject table;
@@ -27,6 +28,7 @@ public class Test_Gizmo_Rotate
         Debug.Log("Rotación original guardada: " + originalRotation.eulerAngles);
     }
 
+    //Class to check all axis has changed rotate correctly
     [UnityTest]
     public IEnumerator CheckRotation()
     {

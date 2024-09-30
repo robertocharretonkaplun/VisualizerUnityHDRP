@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
+//Class to verify correctly position to Gizmo position
 public class Test_Gizmo_Position
 {
     private GameObject table;
@@ -27,6 +28,7 @@ public class Test_Gizmo_Position
         Debug.Log("Posición original guardada: " + originalPosition);
     }
 
+    //Class to check all axis has changed position correctly
     [UnityTest]
     public IEnumerator CheckPosition()
     {

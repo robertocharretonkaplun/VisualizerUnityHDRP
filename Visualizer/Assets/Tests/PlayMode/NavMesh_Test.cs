@@ -5,7 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-//Method to verify movement from navmesh agent
+//Class to verify movement from navmesh agent
 public class NavMeshTest
 {
     private NavMeshController navMeshController;
@@ -36,6 +36,7 @@ public class NavMeshTest
         yield return null;
     }
 
+    //Method to simulate click position with spawn object
     [UnityTest]
     public IEnumerator AgentMovesToTargetOnClickSimulation()
     {

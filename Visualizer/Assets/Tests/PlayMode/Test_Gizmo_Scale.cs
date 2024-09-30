@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
+//Class to verify correctly scale to Gizmo scale
 public class Test_Gizmo_Scale
 {
     private GameObject table;
@@ -27,6 +28,7 @@ public class Test_Gizmo_Scale
         Debug.Log("Escala original guardada: " + originalScale);
     }
 
+    //Class to check all axis has changed scale correctly
     [UnityTest]
     public IEnumerator CheckScale()
     {
