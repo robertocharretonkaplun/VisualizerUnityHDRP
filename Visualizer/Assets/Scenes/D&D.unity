@@ -3706,6 +3706,7 @@ MonoBehaviour:
   selectionMaterial: {fileID: 2100000, guid: fae19271202dc6f44a39e0ec19b3750b, type: 2}
   runtimeHierarchy: {fileID: 1012258769}
   sceneCamera: {fileID: 0}
+  materialDragHandler: {fileID: 0}
 --- !u!4 &732847828
 Transform:
   m_ObjectHideFlags: 0
@@ -6283,6 +6284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   materialToApply: {fileID: 2100000, guid: 074db27c79b351845bd462e4d98361c3, type: 2}
+  selectTransformGizmo: {fileID: 0}
 --- !u!61 &1068633443
 BoxCollider2D:
   m_ObjectHideFlags: 0

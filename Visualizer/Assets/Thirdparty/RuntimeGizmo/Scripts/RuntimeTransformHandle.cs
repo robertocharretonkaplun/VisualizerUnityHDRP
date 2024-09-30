@@ -54,13 +54,32 @@ namespace RuntimeHandle
             {
                 case HandleType.POSITION:
                     _positionHandle = gameObject.AddComponent<PositionHandle>().Initialize(this);
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for position gizmo
                     break;
                 case HandleType.ROTATION:
                     _rotationHandle = gameObject.AddComponent<RotationHandle>().Initialize(this);
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for rotation gizmo
                     break;
                 case HandleType.SCALE:
                     _scaleHandle = gameObject.AddComponent<ScaleHandle>().Initialize(this);
+                    AssignTagToChildren(gameObject, "Floor"); // Assign tag only to children for scale gizmo
                     break;
+            }
+        }
+
+        // Method to assign a tag only to the children of the object
+        void AssignTagToChildren(GameObject parent, string tag)
+        {
+            // Get all children of the parent object
+            Transform[] children = parent.GetComponentsInChildren<Transform>();
+
+            // Assign the tag only to the children, ignoring the parent object
+            foreach (Transform child in children)
+            {
+                if (child != parent.transform) // Ignore the parent object
+                {
+                    child.gameObject.tag = tag;
+                }
             }
         }
 
