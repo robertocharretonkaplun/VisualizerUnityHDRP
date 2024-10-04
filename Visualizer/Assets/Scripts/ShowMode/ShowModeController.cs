@@ -36,7 +36,7 @@ public class ShowModeController : MonoBehaviour
     {
         if (Time.timeScale > 0f)
         {
-            Debug.Log("Animacion");
+            //Debug.Log("Animacion");
         }
         else if (Time.timeScale < 1f)
         {
