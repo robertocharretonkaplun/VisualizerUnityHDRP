@@ -34,11 +34,11 @@ public class SaveSystemN : MonoBehaviour
         //Genera un ID único para el reporte 
         saveReport.id = PlayerPrefs.GetInt("id", 0) + 1;
 
-        // Asigna la fecha actual al campo 'date'
-        saveReport.date = System.DateTime.Now.ToString("yyyy-MM-dd");
+        // Asigna la fecha actual en formato "yyyy-MM-dd".
+        saveReport.date = System.DateTime.UtcNow.ToString("yyyy-MM-dd");
 
-        // Asigna la hora actual al campo 'time'
-        saveReport.time = System.DateTime.Now.ToString("HH:mm:ss");
+        // Asigna la hora actual en formato "HH:mm:ss".
+        saveReport.time = System.DateTime.UtcNow.ToString("HH:mm:ss");
     }
 
     // Método para guardar el reporte en un archivo JSON
