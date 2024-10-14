@@ -14,6 +14,7 @@ public class Waypoints : MonoBehaviour
 
     [Header("Script Reference")]
     public CameraWaypointMove CameraWaypointMoveRef; // Get script to CameraWaypoints 
+    public CharacterWaypointMove CharacterWaypointMoveRef;
 
     [Header("Array")]
     public Transform[] waypointPositions; // Array to waypoints transform
@@ -51,6 +52,7 @@ public class Waypoints : MonoBehaviour
                     GameObject newWaypoint = Instantiate(waypointPrefab, hitInfo.point, Quaternion.identity);
                     //Add the gaypoint generated to list of waypoints
                     CameraWaypointMoveRef.AddWaypoint(newWaypoint.transform);
+                    CharacterWaypointMoveRef.AddWaypoint(newWaypoint.transform);
                 }
             }
         } 
