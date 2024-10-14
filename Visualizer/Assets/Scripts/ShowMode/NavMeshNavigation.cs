@@ -16,6 +16,9 @@ public class NavMeshNavigation : MonoBehaviour
     //Bool to manage change mode
     public bool NavigationMode = true;
 
+    //Bool to set when u can move agent with click and when u cant move
+    public bool MoveActivate = false;
+
     void Start()
     {
         //Get my Navmesh component
@@ -33,8 +36,15 @@ public class NavMeshNavigation : MonoBehaviour
             ChangeNavigationMode();
         }
 
+        //If I push C key
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            //I`ll modify if i can move my agent or not
+            ChangeMoveMode();
+        }
+
         //If I push my left click mouse
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && MoveActivate)
         {
             //Use active camera to make a Raycast to set agent destination
             Camera activeCamera = NavigationMode ? CameraFirstPerson : CameraDefault;
@@ -57,5 +67,11 @@ public class NavMeshNavigation : MonoBehaviour
         //Enable and disable my cameras
         CameraDefault.enabled = !NavigationMode;
         CameraFirstPerson.enabled = NavigationMode;
+    }
+
+    //Method to cahnge between my modes to activate move
+    void ChangeMoveMode()
+    {
+        MoveActivate = !MoveActivate;
     }
 }
