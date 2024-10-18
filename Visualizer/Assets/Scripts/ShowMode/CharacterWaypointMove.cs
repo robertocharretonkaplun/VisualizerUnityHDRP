@@ -27,6 +27,8 @@ public class CharacterWaypointMove : MonoBehaviour
     /// </summary>
     void Update()
     {
+        CleanWaypointList();
+
         if (shouldMove && !isMoving && waypoints.Count > 0)
         {
             StartCoroutine(MoveToWaypoint());
@@ -112,4 +114,14 @@ public class CharacterWaypointMove : MonoBehaviour
         }
 
     }
+
+    public void CleanWaypointList()
+    {
+        //Removes null references from the waypoint list
+        waypoints.RemoveAll(item => item == null);
+        //Update lines after delete a waypoint
+        FindObjectOfType<Waypoints>().UpdateLineRenderer(); 
+    }
+
+
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.SceneView;
 
+[RequireComponent(typeof(LineRenderer))]
 public class Waypoints : MonoBehaviour
 {
     /// <summary>
@@ -10,23 +11,35 @@ public class Waypoints : MonoBehaviour
     /// </summary>
 
     [Header("GameObjects")]
-    public GameObject waypointPrefab; // Get the waypoint prefab
+    public GameObject waypointPrefab; //Get the waypoint prefab
 
     [Header("Script Reference")]
-    public CameraWaypointMove CameraWaypointMoveRef; // Get script to CameraWaypoints 
+    public CameraWaypointMove CameraWaypointMoveRef; //Get script to CameraWaypoints 
     public CharacterWaypointMove CharacterWaypointMoveRef;
 
     [Header("Array")]
-    public Transform[] waypointPositions; // Array to waypoints transform
+    public Transform[] waypointPositions; //Array to waypoints transform
 
     [Header("Booleans to debug and control")]
-    [SerializeField] private bool CreateWaypointActivate; // Boolean to show and control when activate createwaypoint mode
+    [SerializeField] private bool CreateWaypointActivate; //Boolean to show and control when activate createwaypoint mode
 
+    [Header("Line Renderer")]
+    private LineRenderer lineRenderer; //LineRenderer component to draw lines between waypoints
 
     void Start()
     {
         //Initialize creation mode to false
         CreateWaypointActivate = false;
+
+        //Get the LineRenderer component
+        lineRenderer = GetComponent<LineRenderer>();
+
+        //Initialize the number of positions in the LineRenderer
+        lineRenderer.positionCount = 0;
+
+        //Set the line thickness
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
 
         //DEPRECIATE
         //CreateWaypoints();
@@ -53,9 +66,12 @@ public class Waypoints : MonoBehaviour
                     //Add the gaypoint generated to list of waypoints
                     CameraWaypointMoveRef.AddWaypoint(newWaypoint.transform);
                     CharacterWaypointMoveRef.AddWaypoint(newWaypoint.transform);
+                    // Update the LineRenderer to reflect the new waypoints
+                    UpdateLineRenderer();
                 }
             }
-        } 
+        }
+        
     }
 
     //DEPRECIATED
@@ -75,4 +91,29 @@ public class Waypoints : MonoBehaviour
         else
             CreateWaypointActivate = true;
     }
+
+    /// <summary>
+    /// Updates the LineRenderer to draw lines between waypoints
+    /// </summary>
+    public void UpdateLineRenderer()
+    {
+        //Clean the waypoint list by removing null references
+        //CleanWaypointList();
+
+        //Set the number of positions in the LineRenderer based on the number of waypoints
+        lineRenderer.positionCount = CharacterWaypointMoveRef.waypoints.Count;
+
+        //Draw lines between each waypoint
+        for (int i = 0; i < CharacterWaypointMoveRef.waypoints.Count; i++)
+        {
+            //Set the line position to match the corresponding waypoint
+            lineRenderer.SetPosition(i, CharacterWaypointMoveRef.waypoints[i].position);
+        }
+    }
+
+    //Removes null references from the waypoint list
+    /*public void CleanWaypointList()
+    {
+        CharacterWaypointMoveRef.waypoints.RemoveAll(item => item == null);
+    }*/
 }
