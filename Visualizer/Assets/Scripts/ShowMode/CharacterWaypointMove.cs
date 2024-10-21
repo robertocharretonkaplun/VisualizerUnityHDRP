@@ -2,25 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraWaypointMove : MonoBehaviour
+public class CharacterWaypointMove : MonoBehaviour
 {
     /// <summary>
     /// Initialize variables and list to control how and when start camera movement throught the waypoints
     /// </summary>
-    
+
     [Header("List of waytpoints to use and variable to show which has traveled")]
     public List<Transform> waypoints = new List<Transform>();
-    [SerializeField]private int currentWaypointIndex = 0;
+    [SerializeField] private int currentWaypointIndex = 0;
 
     [Header("Variables to move camera")]
-    public float moveSpeed = 5f; 
-    public float waitTime = 1f; 
+    public float moveSpeed = 5f;
+    public float waitTime = 1f;
 
     [Header("Booleans to debug and when the camera should start moving")]
-    [SerializeField]private bool isMoving = false;
-    [SerializeField]private bool shouldMove = false;
+    [SerializeField] private bool isMoving = false;
+    [SerializeField] private bool shouldMove = false;
 
-    private Vector3 ResetStopPosition ;
+    private Vector3 ResetStopPosition;
 
     /// <summary>
     /// Establish a if condition with the booleans and list of waypoints to start coroutine to move
@@ -102,7 +102,7 @@ public class CameraWaypointMove : MonoBehaviour
     /// </summary>
     public void StopMoving()
     {
-        if(shouldMove ==true) 
+        if (shouldMove == true)
         {
             shouldMove = false;
             StopAllCoroutines();
@@ -110,6 +110,6 @@ public class CameraWaypointMove : MonoBehaviour
             transform.position = ResetStopPosition;
             isMoving = false;
         }
-        
+
     }
 }
