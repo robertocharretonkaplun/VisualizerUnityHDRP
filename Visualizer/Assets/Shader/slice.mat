@@ -281,7 +281,7 @@ Material:
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _PlaneNormal: {r: 0, g: 0.9254197, b: -0.37894374, a: 0}
-    - _PlanePosition: {r: -9.8727, g: 0.831, b: -7.978, a: 0}
+    - _PlanePosition: {r: -4.6688, g: 1.184, b: -8.004, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
     - _ThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _TransmittanceColor: {r: 1, g: 1, b: 1, a: 1}
