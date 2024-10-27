@@ -5,8 +5,7 @@ using System.Linq;
 public class GenerateMeshForWarping : MonoBehaviour
 {
     public float minDistance;
-    public Transform trackedObject;
-
+    public List<Transform> trackedObjects; // Lista de objetos de corte
     public MeshFilter filter;
 
     public void Remesh()
@@ -20,7 +19,7 @@ public class GenerateMeshForWarping : MonoBehaviour
     Vector2[] uvs;
     int[] triangles;
     bool[] trianglesDisabled;
-    List <int>[] trisWithVertex;
+    List<int>[] trisWithVertex;
 
     Vector3[] origvertices;
     Vector3[] orignormals;
@@ -29,7 +28,6 @@ public class GenerateMeshForWarping : MonoBehaviour
 
     void Start()
     {
-
         mesh = new Mesh();
         filter = GetComponent<MeshFilter>();
         orignormals = filter.mesh.normals;
@@ -41,7 +39,7 @@ public class GenerateMeshForWarping : MonoBehaviour
         normals = new Vector3[orignormals.Length];
         uvs = new Vector2[origuvs.Length];
         triangles = new int[origtriangles.Length];
-        trianglesDisabled = new bool[origtriangles.Length];
+        trianglesDisabled = new bool[origtriangles.Length / 3]; // Un bool por triángulo
 
         orignormals.CopyTo(normals, 0);
         origvertices.CopyTo(vertices, 0);
@@ -49,80 +47,64 @@ public class GenerateMeshForWarping : MonoBehaviour
         origuvs.CopyTo(uvs, 0);
 
         trisWithVertex = new List<int>[origvertices.Length];
-        for (int i = 0; i <origvertices.Length; ++i)
+        for (int i = 0; i < origvertices.Length; ++i)
         {
-            trisWithVertex[i] = origtriangles.IndexOf(i);
-
+            trisWithVertex[i] = new List<int>();
         }
+        for (int i = 0; i < origtriangles.Length; i += 3)
+        {
+            trisWithVertex[origtriangles[i]].Add(i);
+            trisWithVertex[origtriangles[i + 1]].Add(i);
+            trisWithVertex[origtriangles[i + 2]].Add(i);
+        }
+
         filter.mesh = GenerateMeshWithHoles();
     }
 
-Mesh GenerateMeshWithHoles()
-{
-    // Obtener los límites del cubo usado como "cortador"
-    Bounds cutBounds = trackedObject.GetComponent<Collider>().bounds;
-    
-    // Recorrer los vértices originales de la malla
-    for (int i = 0; i < origvertices.Length; ++i)
+    Mesh GenerateMeshWithHoles()
     {
-        // Aplicar escala y rotación a los vértices de la malla
-        Vector3 v = transform.localToWorldMatrix.MultiplyPoint3x4(origvertices[i]);
-
-        // Verificar si el vértice está dentro de los límites del cubo
-        if (cutBounds.Contains(v))
+        foreach (Transform trackedObject in trackedObjects)
         {
-            // Si el vértice está dentro del cubo, deshabilitar los triángulos asociados
-            for (int j = 0; j < trisWithVertex[i].Count; ++j)
+            Bounds cutBounds = trackedObject.GetComponent<Collider>().bounds;
+
+            for (int i = 0; i < origvertices.Length; ++i)
             {
-                int value = trisWithVertex[i][j];
-                int remainder = value % 3;
-                trianglesDisabled[value - remainder] = true;
-                trianglesDisabled[value - remainder + 1] = true;
-                trianglesDisabled[value - remainder + 2] = true;
+                Vector3 v = transform.localToWorldMatrix.MultiplyPoint3x4(origvertices[i]);
+
+                if (cutBounds.Contains(v))
+                {
+                    foreach (int triIndex in trisWithVertex[i])
+                    {
+                        trianglesDisabled[triIndex / 3] = true;
+                    }
+                }
             }
         }
-    }
 
-    // Reajustar los triángulos para eliminar los deshabilitados
-    triangles = origtriangles;
-    triangles = triangles.RemoveAllSpecifiedIndicesFromArray(trianglesDisabled).ToArray();
-
-    // Asignar los nuevos valores a la malla
-    mesh.SetVertices(vertices.ToList<Vector3>());
-    mesh.SetNormals(normals.ToList());
-    mesh.SetUVs(0, uvs.ToList());
-    mesh.SetTriangles(triangles, 0);
-
-    // Resetear el estado de los triángulos deshabilitados
-    for (int i = 0; i < trianglesDisabled.Length; ++i)
-        trianglesDisabled[i] = false;
-
-    return mesh;
-}
-    Mesh GenerateMeshWithFakeHoles()
-    {
-        Vector3 trackPos = trackedObject.position;
-        for (int i = 0; i <origvertices.Length; ++i)
+        List<int> newTriangles = new List<int>();
+        for (int i = 0; i < triangles.Length; i += 3)
         {
-            if ((origvertices[i] + transform.position - trackPos).magnitude <minDistance)
+            if (!trianglesDisabled[i / 3])
             {
-                normals[i] = -orignormals[i];
-            }
-            else
-            {
-                normals[i] = orignormals[i];
+                newTriangles.Add(triangles[i]);
+                newTriangles.Add(triangles[i + 1]);
+                newTriangles.Add(triangles[i + 2]);
             }
         }
-        mesh.SetVertices(vertices.ToList<Vector3>());
+
+        mesh.SetVertices(vertices.ToList());
         mesh.SetNormals(normals.ToList());
         mesh.SetUVs(0, uvs.ToList());
-        mesh.SetTriangles(triangles, 0);
+        mesh.SetTriangles(newTriangles, 0);
+
+        for (int i = 0; i < trianglesDisabled.Length; ++i)
+            trianglesDisabled[i] = false;
+
         return mesh;
     }
+
     void Update()
     {
-
         Remesh();
     }
 }
-
