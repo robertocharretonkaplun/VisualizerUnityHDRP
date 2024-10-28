@@ -72,12 +72,12 @@ public class SaveSystemN : MonoBehaviour
         {
             // Escribe el archivo JSON en la ruta especificada
             File.WriteAllText(filePath, json);
-            UnityEngine.Debug.Log("Reporte guardado en: " + filePath);
+            UnityEngine.Debug.Log("Reporte guardado en: " + filePath); // Corrección aquí
         }
         catch (System.Exception e)
         {
             // Si ocurre un error durante la escritura del archivo, lo captura
-            UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);
+            UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message); // Corrección aquí
         }
     }
 
