@@ -8,7 +8,6 @@ public class ButtonListener : MonoBehaviour
 
     private void Start()
     {
-        // Añade el listener al botón
         yourButton.onClick.AddListener(() => interactionTracker.OnButtonClicked(yourButton.name));
     }
 }

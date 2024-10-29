@@ -14,7 +14,6 @@ public class SaveButton : MonoBehaviour
 
     private void OnSaveButtonClick()
     {
-        saveSystem.CreateReport();
         saveSystem.SaveReportToFile();
         notificationSystem.CreateNotification("Reporte guardado", "Se ha guardado el reporte correctamente.", 3.0f);
     }
