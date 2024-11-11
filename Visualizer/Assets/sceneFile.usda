@@ -1,0 +1,19 @@
+#usda 1.0
+(
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def "someValue"
+{
+    float3[] aBoundingBox.timeSamples = {
+        1: [(0, 0, 0), (0, 0, 0)],
+    }
+    int[] anArrayOfInts.timeSamples = {
+        1: [1, 2, 3, 4],
+    }
+    string aString.timeSamples = {
+        1: "IT'S ALIIIIIIIIIIIIIVE!",
+    }
+}
+
