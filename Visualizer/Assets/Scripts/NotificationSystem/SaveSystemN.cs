@@ -1,90 +1,88 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 public class SaveSystemN : MonoBehaviour
 {
-    //Instancia que contiene la informacion del reporte que se va a generar
-    //Esta clase actúa como un contenedor para las acciones y notificaciones que serán registradas en el reporte.
-    private SaveReport saveReport;
+    private SaveReport saveReport; // Variable para almacenar el reporte en la memoria antes de guardarlo.
 
-    // Nombre del archivo que contendrá el reporte guardado.
-    private string FileName;
+    private string FileName; //Nombre del archivo que se generara al guardar el reporte.
 
-    // Ruta donde se almacenará el archivo de reporte dentro del sistema de archivos del proyecto.
-    private string filePath;
+    private string filePath; //Ruta completa donde se guardará el archivo del reporte.
 
-    // Método que crea una nueva entrada de notificación al reporte
+    private void Awake()
+    {
+        // Crear una instancia vacía de SaveReport en el inicio
+        saveReport = new SaveReport();
+    }
+
+    // Método para agregar una notificación a la lista en memoria
     public void AddNotificationToReport(string title, string message, float duration)
     {
-        // Crea una nueva entrada de notificación usando los datos recibidos.
+        // Crea una entrada de notificación con título, mensaje y duración.
         NotificationEntry entry = new NotificationEntry(title, message, duration);
-
-        // Agrega la notificación al reporte, almacenándola como una cadena de texto en la lista Notifications.
+        //Agrega la notificación al listado de notificaciones en el reporte.
         saveReport.Notifications.Add(entry.title + ": " + entry.message);
     }
 
-    // Método para crear un nuevo reporte, generando un ID único y registrando la fecha y hora de su creación.
-    public void CreateReport()
+    // Método para agregar una acción a la lista en memoria
+    public void SaveActionToReport(string action)
     {
-        //Almacenará las acciones y notificaciones.
-        saveReport = new SaveReport();
-
-        //Genera un ID único para el reporte 
-        saveReport.id = PlayerPrefs.GetInt("id", 0) + 1;
-
-        // Asigna la fecha actual al campo 'date'
-        saveReport.date = System.DateTime.Now.ToString("yyyy-MM-dd");
-
-        // Asigna la hora actual al campo 'time'
-        saveReport.time = System.DateTime.Now.ToString("HH:mm:ss");
+        //Agrega laación al listado de acciones en el reporte.
+        saveReport.Actions.Add(action);
     }
 
-    // Método para guardar el reporte en un archivo JSON
-    //Convierte el reporte en un formato de texto legible para ser almacenado localmente.
+    // Método para crear un nuevo reporte temporal en memoria
+    public void InitializeNewReport()
+    {
+        //Obtiene el ultimo id almacenado en PlayerPrefs y le suma 1.
+        int currentId = PlayerPrefs.GetInt("id", 0) + 1;
+        //Asigna el nuevo ID al reporte.
+        saveReport.id = currentId;
+        //Almacena el nuevo IDen PlayerPrefs para persistirlo
+        PlayerPrefs.SetInt("id", currentId);
+        PlayerPrefs.Save(); //Guarda PlayerPrefs en disco.
+
+        //Asigna la fecha actual al reporte.
+        saveReport.date = DateTime.UtcNow.ToString("yyyy-MM-dd");
+        //Asigna la hora actual al reporte.
+        saveReport.time = DateTime.UtcNow.ToString("HH:mm:ss");
+    }
+
+    // Método para guardar el reporte en un archivo JSON al hacer clic en el botón de guardar
     public void SaveReportToFile()
     {
-        // Define un nombre de archivo único combinando el ID del reporte y su fecha de creación.
+        //Inicializa el reporte con un nuevo ID, fecha y hora antes de guardar el reporte.
+        InitializeNewReport();
+        //Genera el nombre del archivo usando el ID y la fecha del reporte.
         string newFileName = "Report_" + saveReport.id + "_" + saveReport.date + ".json";
-        FileName = newFileName;
-
-        // Define la carpeta donde se guardará el archivo, dentro de la carpeta "Reports" en la ruta de datos del juego.
+        FileName = newFileName; //Almacena el nombre del archivo.
+        //Define la carpeta donde se guardarán los reportes.
         string Folder = "/Reports/";
-        string folderPath = UnityEngine.Application.dataPath + Folder;  // Ruta a la carpeta "Reports"
-
-        // Verifica si la carpeta existe, si no, la crea.
+        //Define la ruta completa de la carpeta donde se almacenmará el archivo.
+        string folderPath = UnityEngine.Application.dataPath + Folder;
+        // Verifica si la carpeta de reportes existe; si no, la crea.
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
         }
-
-        // Define la ruta completa del archivo dentro de la carpeta "Reports".
+        //Combina la ruta de la carpeta con el nombre del archivo para obtener la ruta completa.
         filePath = folderPath + newFileName;
-
-        // Convierte el reporte a formato JSON para facilitar su almacenamiento.
+        //Convierte el objeto saveReport a formato JASON con formato legible.
         string json = JsonUtility.ToJson(saveReport, true);
 
+        //Intenta escribir el Json en la ruta especificada.
         try
         {
-            // Escribe el archivo JSON en la ruta especificada.
             File.WriteAllText(filePath, json);
+            // Informa en la consola de Unity que el reporte se guardó correctamente.
             UnityEngine.Debug.Log("Reporte guardado en: " + filePath);
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            // Si ocurre un error durante la escritura del archivo, lo captura y muestra un mensaje de error en la consola de Unity.
+            // Muestra un error en la consola si ocurre un problema al guardar el archivo.
             UnityEngine.Debug.LogError("Error al guardar el reporte: " + e.Message);
         }
-    }
-
-    // Método para agregar una acción al reporte
-    public void SaveActionToReport(string action)
-    {
-        // Agrega la acción a la lista de acciones del reporte.
-        saveReport.Actions.Add(action);
-
-        // Guarda el reporte actualizado en un archivo.
-        SaveReportToFile();
     }
 }
