@@ -14,6 +14,7 @@ public class SaveReport
     public List<string> Errors = new List<string>();
 }
 
+
 // Clase para cada Prefab
 public class NotificationEntry
 {
