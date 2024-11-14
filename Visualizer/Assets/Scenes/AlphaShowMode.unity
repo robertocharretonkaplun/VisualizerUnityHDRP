@@ -11987,6 +11987,7 @@ MonoBehaviour:
     type: 3}
   distanceTextPrefab: {fileID: 4049712942842599210, guid: 33d707b8c4b2d424295a3ae7a919fb3f,
     type: 3}
+  canToggleMode: 1
   materialX: {fileID: 2100000, guid: de0e52e090e293442836475c63efd736, type: 2}
   materialY: {fileID: 2100000, guid: a35ab65faef4d1242abb79fdeab04a84, type: 2}
   materialZ: {fileID: 2100000, guid: 5c8273ee366984a448136a089b3598f0, type: 2}
