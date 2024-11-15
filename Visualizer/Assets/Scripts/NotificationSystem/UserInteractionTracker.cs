@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class UserInteractionTracker : MonoBehaviour
 {
-    //Declara Una variable para almacenar una referencia al sistema de guardado.
     private SaveSystemN saveSystem;
 
-    //Método que se llama cuando el script inicia.
     private void Start()
     {
         //Busca una instacia del tipo SaveSystemN en la escena y la asigna saveSystem.
@@ -15,33 +13,30 @@ public class UserInteractionTracker : MonoBehaviour
 
     public void OnButtonClicked(string buttonName)
     {
-        // Asegurarse de que el nombre del botón se envía correctamente
+        // Asegurarse de que el nombre del bot?n se env?a correctamente
         if (!string.IsNullOrEmpty(buttonName))
         {
-            //Si el nombre es valido, guarda la acción en el reporte llamanso al método SaveActionToReport.
-            //en saveSystem, indicando que el botón fue seleccionado.
+            //Si el nombre es valido, guarda la acci?n en el reporte llamanso al m?todo SaveActionToReport.
+            //en saveSystem, indicando que el bot?n fue seleccionado.
             saveSystem.SaveActionToReport("Botón seleccionado: " + buttonName);
         }
         else
         {
-            // Si el nombre es nulo o vacío, muestra una advertencia en la consola.
+            // Si el nombre es nulo o vac?o, muestra una advertencia en la consola.
             UnityEngine.Debug.LogWarning("El nombre del botón está vacío o es nulo.");
         }
     }
 
-    // Método que se llama cuando se coloca un objeto en la escena.
-    public void OnObjectPlaced(string objectName, Vector3 position)
+    // Método para registrar los objetos colocados en el visualizador
+    public void OnObjectPlaced(int itemID, string objectName)
     {
-        // Guarda la acción en el reporte indicando que se ha colocado un objeto,
-        // incluyendo el nombre del objeto y su posición.
-        saveSystem.SaveActionToReport("Objeto colocado: " + objectName + " en posición: " + position);
+        // Agregar el objeto con su ID y nombre al reporte
+        string objectInfo = $"ID: {itemID}, Nombre: {objectName}";
+        saveSystem.SaveObjectToReport(objectInfo);
     }
 
-    // Método que se llama cuando el usuario cambia el valor en un campo de entrada.
     public void OnInputFieldChanged(string inputFieldName, string value)
     {
-        // Guarda la acción en el reporte indicando que se ha modificado un campo de entrada,
-        // incluyendo el nombre del campo y el valor nuevo ingresado.
         saveSystem.SaveActionToReport("Input modificado: " + inputFieldName + " con valor: " + value);
     }
 }

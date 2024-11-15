@@ -10,6 +10,7 @@ public class SaveReport
     public string date;
     public string time;
     public List<string> Actions = new List<string>();
+    public List<string> Objects = new List<string>();
     public List<string> Notifications = new List<string>();
     public List<string> Errors = new List<string>();
 }
