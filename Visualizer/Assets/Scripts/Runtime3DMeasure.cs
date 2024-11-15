@@ -16,20 +16,24 @@ namespace Measure
 
         //List of all points generated
         private List<GameObject> points = new List<GameObject>();
+
         //List of all lines generated
         private List<GameObject> lines = new List<GameObject>();
 
-        //Controla si estamos en modo puntos o modo objeto
+        //Check if we are in object mode o point mode
         private bool isPointMode = true;
+
+        //Bool to control change mode
         [SerializeField ]private bool canToggleMode = true;
 
-        //Materiales para cada eje
+        //Materials to every axis
         [SerializeField] private Material materialX;
         [SerializeField] private Material materialY;
         [SerializeField] private Material materialZ;
 
         private void Update()
         {
+            //If you pulse Left control and Left shift you change mode
             if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && canToggleMode)
             {
                 isPointMode = !isPointMode;
@@ -37,12 +41,13 @@ namespace Measure
                 Debug.Log(isPointMode ? "Modo de Puntos Activado" : "Modo de Objeto Activado");
             }
 
-            // Permite el cambio de modo solo cuando la tecla se suelta
+            //Allow change mode only when key is up
             if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.LeftShift))
             {
                 canToggleMode = true;
             }
 
+            //If you are in point mode change to object mode and "viceversa"
             if (isPointMode)
             {
                 PointMode();
@@ -52,13 +57,14 @@ namespace Measure
                 ObjectMode();
             }
 
-            // Detectar Shift Izquierdo + C para borrar todos los puntos y líneas
+            //Detect shift + C to clear points and lines
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.C))
             {
                 ClearAllPointsAndLines();
             }
         }
 
+        //Mode that joint all points that u instantiate and show the distance have between him
         private void PointMode()
         {
             //Click and control detection to instance points
@@ -72,9 +78,10 @@ namespace Measure
             }
         }
 
+        //Mode that selects the entire object and gets all its measurements to display them
         private void ObjectMode()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl))) 
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out RaycastHit hit))
@@ -135,7 +142,7 @@ namespace Measure
             lineRenderer.SetPosition(0, start);
             lineRenderer.SetPosition(1, end);
 
-            // Asignar el material según el eje predominante
+            //Assign materialby predominant axis
             Material lineMaterial = GetMaterialByAxis(end - start);
             lineRenderer.material = lineMaterial;
 
@@ -147,17 +154,20 @@ namespace Measure
 
             //Pos text in the middle of the line
             Vector3 midPoint = (start + end) / 2;
+
             //Move little bit up text to give us a better vision to the text
             midPoint += Vector3.up * 0.1f;
             TextMesh distanceText = Instantiate(distanceTextPrefab, midPoint, Quaternion.identity, line.transform);
             Debug.Log("Text puesto");
             distanceText.text = $"{label}: {distance:F2} m";
 
-            // Cambiar el tamaño del texto
-            distanceText.characterSize = 0.5f; // Ajusta el valor para el tamaño deseado
-            distanceText.fontSize = 300; // Ajusta el tamaño de fuente
+            //Change text size
+            //Adjust value to size
+            distanceText.characterSize = 0.5f;
+            //Adjust value to font size
+            distanceText.fontSize = 300;
 
-            // Cambiar el color del texto según el eje predominante
+            //Change color text by predominant axis
             Color textColor = GetTextColorByAxis(end - start);
             distanceText.color = textColor;
         }
@@ -181,27 +191,30 @@ namespace Measure
 
         private void GenerateObjectMeasurements(GameObject selectedObject)
         {
-            // Obtén todos los MeshRenderers en los hijos del objeto seleccionado
+            //Get all mesh renderers from the son objects
             MeshRenderer[] meshRenderers = selectedObject.GetComponentsInChildren<MeshRenderer>();
 
+            //Notification if model doesnt have mesh renderer
             if (meshRenderers.Length == 0)
             {
                 Debug.LogWarning("No se encontraron MeshRenderers en el objeto seleccionado.");
                 return;
             }
 
-            // Calcula los límites globales del objeto a partir de todos los MeshRenderers
+            //Calculate global limits from mesh renderer
             Bounds bounds = meshRenderers[0].bounds;
             foreach (var renderer in meshRenderers)
             {
                 bounds.Encapsulate(renderer.bounds);
             }
 
+            //Set direction to instance axis lines
             Vector3 bottomFrontLeft = bounds.min;
             Vector3 topFrontLeft = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
             Vector3 bottomFrontRight = new Vector3(bounds.max.x, bounds.min.y, bounds.min.z);
             Vector3 bottomBackLeft = new Vector3(bounds.min.x, bounds.min.y, bounds.max.z);
 
+            //Draw axis lines
             DrawObjectLine(bottomFrontLeft, topFrontLeft, "Y");
             DrawObjectLine(bottomFrontLeft, bottomFrontRight, "X");
             DrawObjectLine(bottomFrontLeft, bottomBackLeft, "Z");
@@ -209,35 +222,41 @@ namespace Measure
 
         private Material GetMaterialByAxis(Vector3 direction)
         {
-            // Determina el material según el eje predominante
+            //Choose line material from axis
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y) && Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
             {
-                return materialX; // Eje X
+                //Axis X
+                return materialX; 
             }
             else if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x) && Mathf.Abs(direction.y) > Mathf.Abs(direction.z))
             {
-                return materialY; // Eje Y
+                //Axis Y
+                return materialY;
             }
             else
             {
-                return materialZ; // Eje Z
+                //Axis Z
+                return materialZ;
             }
         }
 
         private Color GetTextColorByAxis(Vector3 direction)
         {
-            // Determina el color del texto según el eje predominante
+            //Choose color text from axis
             if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y) && Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
             {
-                return Color.red; // Eje X
+                //Axis X
+                return Color.red; 
             }
             else if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x) && Mathf.Abs(direction.y) > Mathf.Abs(direction.z))
             {
-                return Color.green; // Eje Y
+                //Axis Y
+                return Color.green; 
             }
             else
             {
-                return Color.blue; // Eje Z
+                //Axis Z
+                return Color.blue; 
             }
         }
 
