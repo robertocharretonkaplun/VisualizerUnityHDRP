@@ -97,6 +97,9 @@ public class CameraWaypointMove : MonoBehaviour
         ResetStopPosition = transform.position;
     }
 
+    /// <summary>
+    /// Void to control the stop move
+    /// </summary>
     public void StopMoving()
     {
         if(shouldMove ==true) 

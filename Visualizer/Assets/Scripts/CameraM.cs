@@ -12,57 +12,65 @@ public class CameraM : MonoBehaviour
     private Vector3 lastMousePosition; // Last mouse position
     public float focusDistance = 5f; // Distance from the object when focusing
 
+    //Reference to main camera
+    public Camera MainCamera;
+
     private void Update()
     {
         // Change speed when holding Shift
         float currentMoveSpeed = moveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-        {
-            currentMoveSpeed *= shiftMultiplier;
-        }
 
-        // Camera movement
-        if (Input.GetMouseButton(1))
+        if(MainCamera.enabled)
         {
-            float moveX = Input.GetAxis("Horizontal") * currentMoveSpeed * Time.deltaTime;
-            float moveZ = Input.GetAxis("Vertical") * currentMoveSpeed * Time.deltaTime;
-            float moveY = 0f;
-
-            // Vertical movement
-            if (Input.GetKey(KeyCode.Q))
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                moveY = -currentMoveSpeed * Time.deltaTime;
-            }
-            else if (Input.GetKey(KeyCode.E))
-            {
-                moveY = currentMoveSpeed * Time.deltaTime;
+                currentMoveSpeed *= shiftMultiplier;
             }
 
-            transform.Translate(new Vector3(moveX, moveY, moveZ));
+            // Camera movement
+            if (Input.GetMouseButton(1))
+            {
+                float moveX = Input.GetAxis("Horizontal") * currentMoveSpeed * Time.deltaTime;
+                float moveZ = Input.GetAxis("Vertical") * currentMoveSpeed * Time.deltaTime;
+                float moveY = 0f;
+
+                // Vertical movement
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    moveY = -currentMoveSpeed * Time.deltaTime;
+                }
+                else if (Input.GetKey(KeyCode.E))
+                {
+                    moveY = currentMoveSpeed * Time.deltaTime;
+                }
+
+                transform.Translate(new Vector3(moveX, moveY, moveZ));
+            }
+
+            // Camera rotation
+            if (Input.GetMouseButton(1))
+            {
+                float rotationX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
+                float rotationY = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
+                transform.Rotate(Vector3.up, rotationX, Space.World);
+                transform.Rotate(Vector3.right, -rotationY, Space.Self);
+            }
+
+            // Camera zoom
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            transform.Translate(Vector3.forward * scroll * zoomSpeed, Space.Self);
+
+            // Camera panning
+            if (Input.GetMouseButton(2))
+            {
+                Vector3 delta = Input.mousePosition - lastMousePosition;
+                Vector3 translation = new Vector3(-delta.x, -delta.y, 0) * panSpeed * Time.deltaTime;
+                transform.Translate(translation, Space.Self);
+            }
+
+            lastMousePosition = Input.mousePosition;
         }
-
-        // Camera rotation
-        if (Input.GetMouseButton(1))
-        {
-            float rotationX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-            float rotationY = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
-            transform.Rotate(Vector3.up, rotationX, Space.World);
-            transform.Rotate(Vector3.right, -rotationY, Space.Self);
-        }
-
-        // Camera zoom
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        transform.Translate(Vector3.forward * scroll * zoomSpeed, Space.Self);
-
-        // Camera panning
-        if (Input.GetMouseButton(2))
-        {
-            Vector3 delta = Input.mousePosition - lastMousePosition;
-            Vector3 translation = new Vector3(-delta.x, -delta.y, 0) * panSpeed * Time.deltaTime;
-            transform.Translate(translation, Space.Self);
-        }
-
-        lastMousePosition = Input.mousePosition;
+        
     }
     // Se enfoca en un objeto y se mueve a una distancia determinada
     public void FocusOnObject(Transform target)
