@@ -13,6 +13,7 @@ public class UserInteractionTracker : MonoBehaviour
 
     public void OnButtonClicked(string buttonName)
     {
+        /*
         // Asegurarse de que el nombre del bot?n se env?a correctamente
         if (!string.IsNullOrEmpty(buttonName))
         {
@@ -25,6 +26,7 @@ public class UserInteractionTracker : MonoBehaviour
             // Si el nombre es nulo o vac?o, muestra una advertencia en la consola.
             UnityEngine.Debug.LogWarning("El nombre del botón está vacío o es nulo.");
         }
+        */
     }
 
     // Método para registrar los objetos colocados en el visualizador

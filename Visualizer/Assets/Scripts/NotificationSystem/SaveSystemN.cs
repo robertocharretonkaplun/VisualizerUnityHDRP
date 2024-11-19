@@ -22,7 +22,7 @@ public class SaveSystemN : MonoBehaviour
 
     public void SaveActionToReport(string action)
     {
-        saveReport.Actions.Add(action);
+        //saveReport.Actions.Add(action);
     }
 
     public void SaveObjectToReport(string objectInfo)
