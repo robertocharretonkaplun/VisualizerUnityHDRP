@@ -2280,6 +2280,7 @@ MonoBehaviour:
   panSpeed: 100
   shiftMultiplier: 2
   focusDistance: 5
+  MainCamera: {fileID: 535164219}
 --- !u!114 &535164225
 MonoBehaviour:
   m_ObjectHideFlags: 0
