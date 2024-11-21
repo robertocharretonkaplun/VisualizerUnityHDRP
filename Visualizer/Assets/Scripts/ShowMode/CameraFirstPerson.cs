@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CameraFirstPerson : MonoBehaviour
 {
+    //Reference to camera
+    public Camera MyFPCamera;
+
     //Rotation speed
     public float rotationSpeed = 100f;
 
@@ -11,28 +14,32 @@ public class CameraFirstPerson : MonoBehaviour
     public Transform playerBody;
 
     // Degrees to limit x rotation
-    private float xRotation = 0f; 
+    private float xRotation = 0f;
 
     void Update()
     {
-        //If push right mouse button
-        if (Input.GetMouseButton(1)) 
+        //Check if my camera is active
+        if (MyFPCamera.enabled)
         {
-            //Rotate on X axis and rotate my capsule/player
-            float rotationX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-            playerBody.Rotate(Vector3.up * rotationX);
+            //If push right mouse button
+            if (Input.GetMouseButton(1))
+            {
+                //Rotate on X axis and rotate my capsule/player
+                float rotationX = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
+                playerBody.Rotate(Vector3.up * rotationX);
 
-            //Rotate on Y axis and only rotate camera
-            float rotationY = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
+                //Rotate on Y axis and only rotate camera
+                float rotationY = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
 
-            //Less rotationY to can move camera up or down
-            xRotation -= rotationY;
+                //Less rotationY to can move camera up or down
+                xRotation -= rotationY;
 
-            //Make a clamp to limit rotation degrees and u cant rotate camera back to u
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f); 
+                //Make a clamp to limit rotation degrees and u cant rotate camera back to u
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            //Rotation only affects to my camera
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                //Rotation only affects to my camera
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            }
         }
     }
 }
