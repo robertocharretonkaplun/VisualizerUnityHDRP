@@ -1,10 +1,10 @@
-using System;  
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class SaveReport
+public class SaveReport : MonoBehaviour
 {
     public int id;
     public string date;

@@ -12,7 +12,7 @@ public class LevelEditor_Manager : MonoBehaviour
     public GameObject[] ItemPrefabs;
     public int CurrentButtonPressed;
     public float PlaneHeight = 0f; // altura del plano donde se colocan los objetos
-    
+
     // Private variables
     [SerializeField] private CommandManager commandManager;
 
