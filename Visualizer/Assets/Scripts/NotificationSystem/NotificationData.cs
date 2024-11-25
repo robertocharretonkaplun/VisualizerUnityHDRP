@@ -29,7 +29,7 @@ public class NotificationData : MonoBehaviour
 
     // Método que inicializa la duración de la notificación y comienza
     // la corrutina que la destruirá después del tiempo indicado.
- 
+
     public void Initialize(float customDuration = -1)
     {
         // Si se especifica un valor positivo en customDuration, actualiza

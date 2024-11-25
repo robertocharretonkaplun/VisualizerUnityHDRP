@@ -12,7 +12,7 @@ public class LevelEditor_Manager : MonoBehaviour
     public GameObject[] ItemPrefabs;
     public int CurrentButtonPressed;
     public float PlaneHeight = 0f; // altura del plano donde se colocan los objetos
-    
+
     // Private variables
     [SerializeField] private CommandManager commandManager;
 
@@ -59,9 +59,16 @@ public class LevelEditor_Manager : MonoBehaviour
                 // Crear el comando y ejecutarlo a través del CommandManager
                 var placeItemCommand = new PlaceItemCommand(itemPrefab, spawnPosition, spawnRotation);
                 commandManager.ExecuteCommand(placeItemCommand);
+
+                // Registrar el objeto colocado en el reporte
+                string objectName = itemPrefab.name; // Usamos el nombre del prefab como nombre del objeto
+                UserInteractionTracker userInteractionTracker = FindObjectOfType<UserInteractionTracker>();
+                if (userInteractionTracker != null)
+                {
+                    userInteractionTracker.OnObjectPlaced(CurrentButtonPressed, objectName); // Pasamos el ID y nombre del objeto
+                }
             }
         }
-
         // Check for undo/redo inputs (example: Ctrl+Z for undo, Ctrl+Y for redo)
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Z))
         {
