@@ -16,6 +16,7 @@ public class LevelEditor_Manager : MonoBehaviour
     // Private variables
     [SerializeField] private CommandManager commandManager;
 
+
     // Awake is called when the script instance is being loaded
     private void Awake()
     {
@@ -61,11 +62,16 @@ public class LevelEditor_Manager : MonoBehaviour
                 commandManager.ExecuteCommand(placeItemCommand);
 
                 // Registrar el objeto colocado en el reporte
-                string objectName = itemPrefab.name; // Usamos el nombre del prefab como nombre del objeto
-                UserInteractionTracker userInteractionTracker = FindObjectOfType<UserInteractionTracker>();
-                if (userInteractionTracker != null)
+                string objectName = itemPrefab.name;
+                SaveSystemN saveSystem = FindObjectOfType<SaveSystemN>();
+
+                if (saveSystem != null)
                 {
-                    userInteractionTracker.OnObjectPlaced(CurrentButtonPressed, objectName); // Pasamos el ID y nombre del objeto
+                    Vector3 rotation = spawnRotation.eulerAngles;
+                    Vector3 scale = itemPrefab.transform.localScale;
+                    saveSystem.SaveObjectToReport(
+                        $"ID: {CurrentButtonPressed}, Nombre: {objectName}",
+                        spawnPosition, rotation, scale);
                 }
             }
         }
