@@ -67,10 +67,11 @@ namespace RuntimeInspectorNamespace
 		private static Tooltip tooltipPopup;
 		private static readonly Stack<DraggedReferenceItem> draggedReferenceItemsPool = new Stack<DraggedReferenceItem>();
 
+		public static readonly CompareInfo caseInsensitiveComparer = new CultureInfo( "en-US" ).CompareInfo;
 		internal static readonly NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance( CultureInfo.InvariantCulture );
 		internal static readonly StringBuilder stringBuilder = new StringBuilder( 200 );
 
-		public static bool IsNull( this object obj )
+		internal static bool IsNull( this object obj )
 		{
 			if( obj is Object )
 				return obj == null || obj.Equals( null );
@@ -79,7 +80,7 @@ namespace RuntimeInspectorNamespace
 		}
 
 		// Checks if all the objects inside the IList are null
-		public static bool IsEmpty<T>( this IList<T> objects )
+		internal static bool IsEmpty<T>( this IList<T> objects )
 		{
 			if( objects == null )
 				return true;
@@ -149,7 +150,7 @@ namespace RuntimeInspectorNamespace
 			return stringBuilder.ToString();
 		}
 
-		public static string GetNameWithType( this object obj, Type defaultType = null )
+		internal static string GetNameWithType( this object obj, Type defaultType = null )
 		{
 			if( obj.IsNull() )
 			{
@@ -162,7 +163,7 @@ namespace RuntimeInspectorNamespace
 			return ( obj is Object ) ? string.Concat( ( (Object) obj ).name, " (", obj.GetType().Name, ")" ) : obj.GetType().Name;
 		}
 
-		public static Texture GetTexture( this Object obj )
+		internal static Texture GetTexture( this Object obj )
 		{
 			if( obj )
 			{
@@ -512,6 +513,34 @@ namespace RuntimeInspectorNamespace
 			}
 
 			return Input.GetMouseButton( (int) eventData.button );
+#endif
+		}
+
+		// Check if Control/Command key is held
+		public static bool IsCtrlKeyHeld()
+		{
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+#if UNITY_EDITOR_OSX || ( !UNITY_EDITOR && UNITY_STANDALONE_OSX )
+			return Keyboard.current != null && ( Keyboard.current.leftCommandKey.isPressed || Keyboard.current.rightCommandKey.isPressed );
+#else
+			return Keyboard.current != null && Keyboard.current.ctrlKey.isPressed;
+#endif
+#else
+#if UNITY_EDITOR_OSX || ( !UNITY_EDITOR && UNITY_STANDALONE_OSX )
+			return Input.GetKey( KeyCode.LeftCommand ) || Input.GetKey( KeyCode.RightCommand );
+#else
+			return Input.GetKey( KeyCode.LeftControl ) || Input.GetKey( KeyCode.RightControl );
+#endif
+#endif
+		}
+
+		// Check if Shift key is held
+		public static bool IsShiftKeyHeld()
+		{
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+			return Keyboard.current != null && Keyboard.current.shiftKey.isPressed;
+#else
+			return Input.GetKey( KeyCode.LeftShift ) || Input.GetKey( KeyCode.RightShift );
 #endif
 		}
 
@@ -924,8 +953,6 @@ namespace RuntimeInspectorNamespace
 					"AssetStoreTools",
 #endif
 				};
-
-				CompareInfo caseInsensitiveComparer = new CultureInfo( "en-US" ).CompareInfo;
 
 				foreach( Assembly assembly in AppDomain.CurrentDomain.GetAssemblies() )
 				{

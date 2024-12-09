@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// This class is control the play/pause/stop button
@@ -12,7 +13,13 @@ public class ShowModeController : MonoBehaviour
     /// </summary>
 
     [Header("Script reference")]
-    public CameraWaypointMove CameraWaypointMoveRef; //Get camera waypoint move script
+    //Get camera waypoint move script
+    public CameraWaypointMove CameraWaypointMoveRef; 
+    public CharacterWaypointMove CharacterWaypointMoveRef;
+
+    [Header("GameObjects")]
+    public CapsuleCollider CapsuleAgentAgent;
+    public NavMeshAgent NavMeshAgentRef;
 
 
     /// <summary>
@@ -36,7 +43,7 @@ public class ShowModeController : MonoBehaviour
     {
         if (Time.timeScale > 0f)
         {
-            Debug.Log("Animacion");
+            //Debug.Log("Animacion");
         }
         else if (Time.timeScale < 1f)
         {
@@ -52,6 +59,9 @@ public class ShowModeController : MonoBehaviour
     {
         Time.timeScale = 1.0f; //Set timescale normal
         CameraWaypointMoveRef.StartMoving(); //Get function to starting move from CameraWaypointMoveRef
+        CharacterWaypointMoveRef.StartMoving();
+        CapsuleAgentAgent.enabled = false;
+        NavMeshAgentRef.enabled = false;
     }
 
     /// <summary>
@@ -67,6 +77,10 @@ public class ShowModeController : MonoBehaviour
     /// </summary>
     public void StopButton()
     {
-
+        Time.timeScale = 1f;
+        CameraWaypointMoveRef.StopMoving();
+        CharacterWaypointMoveRef.StopMoving();
+        CapsuleAgentAgent.enabled = true;
+        NavMeshAgentRef.enabled = true;
     }
 }

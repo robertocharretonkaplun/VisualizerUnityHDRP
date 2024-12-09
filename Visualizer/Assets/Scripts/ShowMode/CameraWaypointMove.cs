@@ -20,6 +20,8 @@ public class CameraWaypointMove : MonoBehaviour
     [SerializeField]private bool isMoving = false;
     [SerializeField]private bool shouldMove = false;
 
+    private Vector3 ResetStopPosition ;
+
     /// <summary>
     /// Establish a if condition with the booleans and list of waypoints to start coroutine to move
     /// </summary>
@@ -92,5 +94,22 @@ public class CameraWaypointMove : MonoBehaviour
     public void StartMoving()
     {
         shouldMove = true;
+        ResetStopPosition = transform.position;
+    }
+
+    /// <summary>
+    /// Void to control the stop move
+    /// </summary>
+    public void StopMoving()
+    {
+        if(shouldMove ==true) 
+        {
+            shouldMove = false;
+            StopAllCoroutines();
+            currentWaypointIndex = 0;
+            transform.position = ResetStopPosition;
+            isMoving = false;
+        }
+        
     }
 }

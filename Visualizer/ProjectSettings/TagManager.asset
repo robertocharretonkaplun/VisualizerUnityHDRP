@@ -6,16 +6,17 @@ TagManager:
   tags:
   - LevelEditor_Manager
   - Selectable
-  - ExcludeFromSave
+  - DeactivatableObject
+  - Floor
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Selected
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Ignore NavMesh
   - 
   - 
   - 
